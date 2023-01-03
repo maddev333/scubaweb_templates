@@ -159,19 +159,6 @@
         {
             "type": "Microsoft.Automation/automationAccounts/jobs",
             "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/31655b23-4075-4319-a377-6377a68de6d3')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "runbook": {
-                    "name": "AzureAutomationTutorialWithIdentityGraphical"
-                }
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/jobs",
-            "apiVersion": "2022-08-08",
             "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/4173ad29-481d-4956-af1c-200d6ba0d4c7')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
@@ -181,33 +168,7 @@
                     "name": "scubagear_1"
                 }
             }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/jobs",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/8e8ec444-84cf-4e7c-8f3e-b2870d9619ff')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "runbook": {
-                    "name": "AzureAutomationTutorialWithIdentity"
-                }
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/jobs",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/f114e25e-2c50-4da5-8d11-7480908a78b1')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "runbook": {
-                    "name": "AzureAutomationTutorialWithIdentity"
-                }
-            }
-        },
+        },     
         {
             "type": "Microsoft.Automation/automationAccounts/modules",
             "apiVersion": "2022-08-08",
