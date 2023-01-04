@@ -1376,7 +1376,11 @@
                 "runbookType": "PowerShell",
                 "logVerbose": false,
                 "logProgress": false,
-                "logActivityTrace": 0
+                "logActivityTrace": 0,
+                "publishContentLink": {
+                    "uri": "https://github.com/maddev333/scubaweb_templates/blob/main/src/scuba_aadrunbook.ps1",
+                    "version": "1"
+                }
             }
         },
         {
