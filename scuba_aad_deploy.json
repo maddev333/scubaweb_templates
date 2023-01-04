@@ -129,10 +129,6 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
             ],
-            "copy": {
-                "name": "runbooksLoop",
-                "count": "[length(variables('asrScripts').runbooks)]"
-            },
             "properties": {
                 "description": "AAD Scuba provider",
                 "runbookType": "PowerShell",
