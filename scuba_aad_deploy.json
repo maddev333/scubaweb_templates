@@ -39,16 +39,9 @@
         },
         "_artifactsLocation": {
             "type": "string",
-            "defaultValue": "[deployment().properties.templateLink.uri]",
+            "defaultValue": "https://github.com/maddev333/scubaweb_templates/",
             "metadata": {
                 "description": "URI to artifacts location"
-            }
-        },
-        "_artifactsLocationSasToken": {
-            "type": "securestring",
-            "defaultValue": "",
-            "metadata": {
-                "description": "The sasToken required to access _artifactsLocation.  When the template is deployed using the accompanying scripts, a sasToken will be automatically generated"
             }
         }
     },
