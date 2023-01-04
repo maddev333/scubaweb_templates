@@ -135,9 +135,16 @@
             "type": "Microsoft.Automation/automationAccounts",
             "apiVersion": "2021-04-01",
             "location": "[parameters('automationRegion')]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
             "properties": {
                 "sku": {
                     "name": "Basic"
+                },
+                "encryption": {
+                    "keySource": "Microsoft.Automation",
+                    "identity": {}
                 }
             },
             "resources": [
