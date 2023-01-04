@@ -295,3 +295,5 @@ catch {
     Write-Error -Message $_.Exception
     throw $_.Exception
 }
+
+Export-AADProvider
