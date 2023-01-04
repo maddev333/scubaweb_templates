@@ -4,6 +4,7 @@
     "parameters": {
         "automationAccountName": {
             "type": "string",
+             "defaultValue" : "scubarunbook",
             "metadata": {
                 "description": "Specify the name of your Automation Account"
             }
