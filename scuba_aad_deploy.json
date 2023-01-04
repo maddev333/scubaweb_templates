@@ -182,7 +182,7 @@
     "MyOutputs" : {
         "type" : "string",
         "value" : "
-        [concat(parameters('automationAccountName'), '/', variables('asrScripts').runbooks`[copyIndex()`].Name), parameters('automationRegion'), resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName')),
+        [parameters('automationAccountName'), '/', variables('asrScripts').runbooks`[copyIndex()`].Name, parameters('automationRegion'), resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName')),
          length(variables('asrScripts').runbooks), variables('asrScripts').runbooks`[copyIndex()`].description, variables('asrScripts').runbooks`[copyIndex()`].type, variables('asrScripts').runbooks`[copyIndex()`].url,
          variables('asrScripts').runbooks`[copyIndex()`].version
          ]"
