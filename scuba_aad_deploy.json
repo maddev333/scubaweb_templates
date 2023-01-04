@@ -2,9 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "certificates_AzureRunAsCertificate_base64Value": {
-            "type": "SecureString"
-        },
         "automationAccounts_runbooksact_name": {
             "defaultValue": "runbooksact_auto",
             "type": "String"
