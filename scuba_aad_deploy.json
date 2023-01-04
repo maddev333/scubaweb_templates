@@ -87,7 +87,7 @@
                 },
                 {
                     "name": "MicrosoftTeams",
-                    "url": "[uri(parameters('modulesUri'),'MicrosoftTeams.4.9.1.nupkg')]"
+                    "url": "https://psg-prod-eastus.azureedge.net/packages/microsoftteams.4.9.1.nupkg"
                 },
                 {
                     "name": "Microsoft.Online.SharePoint.PowerShell",
