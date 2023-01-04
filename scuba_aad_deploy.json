@@ -64,7 +64,7 @@
             "runbooks": [
                 {
                     "name": "scuba_aadrunbook",
-                    "url": "[uri(parameters('_artifactsLocation'), concat('src/scuba_aadrunbook.ps1'))]",
+                    "url": "[uri(parameters('_artifactsLocation'), 'src/scuba_aadrunbook.ps1')]",
                     "version": "1.0.0.0",
                     "type": "PowerShell",
                     "description": "ASR Runbook to enable public IP on every VM in a Recovery Plan"
