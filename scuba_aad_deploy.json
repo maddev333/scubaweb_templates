@@ -124,7 +124,7 @@
         {
             "apiVersion": "2020-01-13-preview",
             "type": "Microsoft.Automation/automationAccounts/runbooks",
-            "name": "scuba_aadrunbook",
+            "name": "scubarunbook/scuba_aadrunbook",
             "location": "[parameters('automationRegion')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
