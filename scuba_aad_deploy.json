@@ -142,33 +142,7 @@
                     }
                 }
             }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/jobs",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/2fc77069-ca56-4a74-a1bf-a7807ba4f2f0')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "runbook": {
-                    "name": "scubagear_1"
-                }
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/jobs",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/4173ad29-481d-4956-af1c-200d6ba0d4c7')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "runbook": {
-                    "name": "scubagear_1"
-                }
-            }
-        },     
+        },   
         {
             "type": "Microsoft.Automation/automationAccounts/modules",
             "apiVersion": "2022-08-08",
@@ -1388,66 +1362,6 @@
             ],
             "properties": {
                 "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/runbooks",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/AzureAutomationTutorialScript')]",
-            "location": "eastus",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "runbookType": "PowerShell",
-                "logVerbose": false,
-                "logProgress": false,
-                "logActivityTrace": 0
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/runbooks",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/AzureAutomationTutorialWithIdentity')]",
-            "location": "eastus",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "runbookType": "PowerShell",
-                "logVerbose": false,
-                "logProgress": false,
-                "logActivityTrace": 0
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/runbooks",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/AzureAutomationTutorialWithIdentityGraphical')]",
-            "location": "eastus",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "runbookType": "GraphPowerShell",
-                "logVerbose": false,
-                "logProgress": false,
-                "logActivityTrace": 0
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/runbooks",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/scubabook')]",
-            "location": "eastus",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "runbookType": "PowerShell",
-                "logVerbose": false,
-                "logProgress": false,
-                "logActivityTrace": 0
             }
         },
         {
