@@ -14,7 +14,8 @@
             "metadata": {
                 "description": "Default modules URI"
             }
-        },
+        }
+    },
     "variables": {},
     "resources": [
         {
