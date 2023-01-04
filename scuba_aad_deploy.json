@@ -61,7 +61,7 @@
                     "url": "[uri(parameters('_artifactsLocation'), 'src/scuba_aadrunbook.ps1')]",
                     "version": "1.0.0.0",
                     "type": "PowerShell",
-                    "description": ""
+                    "description": "AAD Scuba provider"
                 }
             ],
             "modules": [
