@@ -181,7 +181,7 @@
     "outputs": {
     "MyOutputs" : {
         "type" : "string",
-        "value" : "[parameters('automationAccountName'), parameters('automationRegion'), resourceId('Microsoft.Automation/automationAccounts/'), parameters('automationAccountName'), length(variables('asrScripts').runbooks)]"
+        "value" : "[parameters('automationAccountName')]"
       }
     }
 }
