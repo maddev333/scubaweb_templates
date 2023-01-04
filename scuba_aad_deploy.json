@@ -124,7 +124,7 @@
         {
             "apiVersion": "2020-01-13-preview",
             "type": "Microsoft.Automation/automationAccounts/runbooks",
-            "name": "[concat(parameters('automationAccountName'), '/', variables('asrScripts').runbooks[copyIndex()].Name)]",
+            "name": "scuba_aadrunbook",
             "location": "[parameters('automationRegion')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
@@ -134,13 +134,13 @@
                 "count": "[length(variables('asrScripts').runbooks)]"
             },
             "properties": {
-                "description": "[variables('asrScripts').runbooks[copyIndex()].description]",
-                "runbookType": "[variables('asrScripts').runbooks[copyIndex()].type]",
+                "description": "AAD Scuba provider",
+                "runbookType": "PowerShell",
                 "logProgress": false,
                 "logVerbose": true,
                 "publishContentLink": {
-                    "uri": "[variables('asrScripts').runbooks[copyIndex()].url]",
-                    "version": "[variables('asrScripts').runbooks[copyIndex()].version]"
+                    "uri": "https://github.com/maddev333/scubaweb_templates/blob/main/src/scuba_aadrunbook.ps1",
+                    "version": "1"
                 }
             }
         },
