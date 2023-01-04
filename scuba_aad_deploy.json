@@ -135,7 +135,7 @@
                 "logProgress": false,
                 "logVerbose": true,
                 "publishContentLink": {
-                    "uri": "https://github.com/maddev333/scubaweb_templates/blob/main/src/scuba_aadrunbook.ps1",
+                    "uri": "https://raw.githubusercontent.com/maddev333/scubaweb_templates/main/src/scuba_aadrunbook.ps1",
                     "version": "1"
                 }
             }
