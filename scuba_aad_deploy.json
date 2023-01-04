@@ -63,11 +63,11 @@
         "asrScripts": {
             "runbooks": [
                 {
-                    "name": "scuba_aadrunbook",
+                    "name": "aadscubarunbook",
                     "url": "[uri(parameters('_artifactsLocation'), 'src/scuba_aadrunbook.ps1')]",
                     "version": "1.0.0.0",
                     "type": "PowerShell",
-                    "description": "ASR Runbook to enable public IP on every VM in a Recovery Plan"
+                    "description": ""
                 }
             ],
             "modules": [
