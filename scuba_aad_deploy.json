@@ -87,39 +87,39 @@
                 },
                 {
                     "name": "MicrosoftTeams",
-                    "url": "[uri(parameters('modulesUri'),'MicrosoftTeams.4.8.0.nupkg')]"
+                    "url": "[uri(parameters('modulesUri'),'MicrosoftTeams.4.9.1.nupkg')]"
                 },
                 {
                     "name": "Microsoft.Online.SharePoint.PowerShell",
-                    "url": "[uri(parameters('modulesUri'),'Microsoft.Online.SharePoint.PowerShell.16.0.0.nupkg')]"
+                    "url": "[uri(parameters('modulesUri'),'microsoft.online.sharepoint.powershell.16.0.23109.12000.nupkg')]"
                 },
                 {
                     "name": "Microsoft.PowerApps.Administration.PowerShell",
-                    "url": "[uri(parameters('modulesUri'),'Microsoft.PowerApps.Administration.PowerShell.2.0.0.nupkg')]"
+                    "url": "[uri(parameters('modulesUri'),'microsoft.powerapps.administration.powershell.2.0.154.nupkg')]"
                 },
                 {
                     "name": "Microsoft.PowerApps.PowerShell",
-                    "url": "[uri(parameters('modulesUri'),'Microsoft.PowerApps.PowerShell.1.0.0.nupkg')]"
+                    "url": "[uri(parameters('modulesUri'),'microsoft.powerapps.powershell.1.0.26.nupkg')]"
                 },
                 {
                     "name": "Microsoft.Graph.Authentication",
-                    "url": "[uri(parameters('modulesUri'),'Microsoft.Graph.Authentication.1.14.0.nupkg')]"
+                    "url": "[uri(parameters('modulesUri'),'microsoft.graph.authentication.1.19.0.nupkg')]"
                 },
                 {
                     "name": "Microsoft.Graph.Groups",
-                    "url": "[uri(parameters('modulesUri'),'Microsoft.Graph.Groups.1.14.0.nupkg')]"
+                    "url": "[uri(parameters('modulesUri'),'Microsoft.Graph.Groups.1.19.0.nupkg')]"
                 },
                 {
                     "name": "Microsoft.Graph.Identity.DirectoryManagement",
-                    "url": "[uri(parameters('modulesUri'),'Microsoft.Graph.Identity.DirectoryManagement.1.14.0.nupkg')]"
+                    "url": "[uri(parameters('modulesUri'),'Microsoft.Graph.Identity.DirectoryManagement.1.19.0.nupkg')]"
                 },
                 {
                     "name": "Microsoft.Graph.Identity.SignIns",
-                    "url": "[uri(parameters('modulesUri'),'Microsoft.Graph.Identity.SignIns.1.14.0.nupkg')]"
+                    "url": "[uri(parameters('modulesUri'),'Microsoft.Graph.Identity.SignIns.1.19.0.nupkg')]"
                 },
                 {
                     "name": "Microsoft.Graph.Users",
-                    "url": "[uri(parameters('modulesUri'),'Microsoft.Graph.Users.1.14.0.nupkg')]"
+                    "url": "[uri(parameters('modulesUri'),'Microsoft.Graph.Users.1.19.0.nupkg')]"
                 }
                 
             ]
