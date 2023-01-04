@@ -107,19 +107,19 @@
                 },
                 {
                     "name": "Microsoft.Graph.Groups",
-                    "url": "https://psg-prod-eastus.azureedge.net/packages/Microsoft.Graph.Groups.1.19.0.nupkg"
+                    "url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.groups.1.19.0.nupkg"
                 },
                 {
                     "name": "Microsoft.Graph.Identity.DirectoryManagement",
-                    "url": "https://psg-prod-eastus.azureedge.net/packages/Microsoft.Graph.Identity.DirectoryManagement.1.19.0.nupkg"
+                    "url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.identity.directorymanagement.1.19.0.nupkg"
                 },
                 {
                     "name": "Microsoft.Graph.Identity.SignIns",
-                    "url": "https://psg-prod-eastus.azureedge.net/packages/Microsoft.Graph.Identity.SignIns.1.19.0.nupkg"
+                    "url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.identity.signins.1.19.0.nupkg"
                 },
                 {
                     "name": "Microsoft.Graph.Users",
-                    "url": "https://psg-prod-eastus.azureedge.net/packages/Microsoft.Graph.Users.1.19.0.nupkg"
+                    "url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.users.1.19.0.nupkg"
                 }
                 
             ]
