@@ -14,1381 +14,168 @@
             "metadata": {
                 "description": "Default modules URI"
             }
+        },
+        "automationRegion": {
+            "type": "string",
+            "allowedValues": [
+                "westeurope",
+                "southeastasia",
+                "eastus2",
+                "southcentralus",
+                "japaneast",
+                "northeurope",
+                "canadacentral",
+                "australiasoutheast",
+                "centralindia",
+                "westcentralus",
+                "usgovvirginia",
+                "usgovtexas",
+                "usgovarizona"
+            ],
+            "metadata": {
+                "description": "Specify the region for your automation account"
+            }
+        },
+        "_artifactsLocation": {
+            "type": "string",
+            "defaultValue": "[deployment().properties.templateLink.uri]",
+            "metadata": {
+                "description": "URI to artifacts location"
+            }
+        },
+        "_artifactsLocationSasToken": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The sasToken required to access _artifactsLocation.  When the template is deployed using the accompanying scripts, a sasToken will be automatically generated"
+            }
         }
     },
-    "variables": {},
+    "variables": {
+        "assets": {
+            "aaVariables": {
+                "AzureSubscriptionId": {
+                    "name": "AzureSubscriptionId",
+                    "description": "Azure subscription Id"
+                }
+            }
+        },
+        "asrScripts": {
+            "runbooks": [
+                {
+                    "name": "scuba_aadrunbook",
+                    "url": "[uri(parameters('_artifactsLocation'), concat('scripts/scuba_aadrunbook.ps1', parameters('_artifactsLocationSasToken')))]",
+                    "version": "1.0.0.0",
+                    "type": "PowerShell",
+                    "description": "ASR Runbook to enable public IP on every VM in a Recovery Plan"
+                }
+            ],
+            "modules": [
+                {
+                    "name": "AzureRm.Compute",
+                    "url": "[uri(parameters('modulesUri'),'azurerm.compute.2.8.0.nupkg')]"
+                },
+                {
+                    "name": "AzureRm.Resources",
+                    "url": "[uri(parameters('modulesUri'),'azurerm.resources.3.7.0.nupkg')]"
+                },
+                {
+                    "name": "AzureRm.Network",
+                    "url": "[uri(parameters('modulesUri'),'azurerm.network.3.6.0.nupkg')]"
+                },
+                {
+                    "name": "AzureRm.Automation",
+                    "url": "[uri(parameters('modulesUri'),'azurerm.automation.1.0.3.nupkg')]"
+                }
+            ]
+        },
+        "azureRmProfile": {
+            "name": "AzureRm.Profile",
+            "url": "[uri(parameters('modulesUri'),'azurerm.profile.2.7.0.nupkg')]"
+        }
+    },
     "resources": [
         {
+            "name": "[parameters('automationAccountName')]",
             "type": "Microsoft.Automation/automationAccounts",
-            "apiVersion": "2022-08-08",
-            "name": "[parameters('automationAccounts_runbooksact_name')]",
-            "location": "eastus",
-            "identity": {
-                "type": "SystemAssigned"
-            },
+            "apiVersion": "2021-04-01",
+            "location": "[parameters('automationRegion')]",
             "properties": {
-                "publicNetworkAccess": true,
-                "disableLocalAuth": false,
                 "sku": {
                     "name": "Basic"
-                },
-                "encryption": {
-                    "keySource": "Microsoft.Automation",
-                    "identity": {}
                 }
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/connections",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/AzureRunAsConnection')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "connectionType": {
-                    "name": "AzureServicePrincipal"
-                }
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/connectionTypes",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Azure')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "isGlobal": true,
-                "fieldDefinitions": {
-                    "AutomationCertificateName": {
-                        "isEncrypted": false,
-                        "isOptional": false,
-                        "type": "System.String"
-                    },
-                    "SubscriptionID": {
-                        "isEncrypted": false,
-                        "isOptional": false,
-                        "type": "System.String"
+            },
+            "resources": [
+                {
+                    "name": "[variables('assets').aaVariables.AzureSubscriptionId.name]",
+                    "type": "variables",
+                    "apiVersion": "2021-04-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
+                    ],
+                    "properties": {
+                        "description": "[variables('assets').aaVariables.AzureSubscriptionId.description]",
+                        "value": "[concat('\"',subscription().subscriptionId,'\"')]"
                     }
                 }
-            }
+            ]
         },
         {
-            "type": "Microsoft.Automation/automationAccounts/connectionTypes",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/AzureClassicCertificate')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "isGlobal": true,
-                "fieldDefinitions": {
-                    "SubscriptionName": {
-                        "isEncrypted": false,
-                        "isOptional": false,
-                        "type": "System.String"
-                    },
-                    "SubscriptionId": {
-                        "isEncrypted": false,
-                        "isOptional": false,
-                        "type": "System.String"
-                    },
-                    "CertificateAssetName": {
-                        "isEncrypted": false,
-                        "isOptional": false,
-                        "type": "System.String"
-                    }
-                }
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/connectionTypes",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/AzureServicePrincipal')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "isGlobal": true,
-                "fieldDefinitions": {
-                    "ApplicationId": {
-                        "isEncrypted": false,
-                        "isOptional": false,
-                        "type": "System.String"
-                    },
-                    "TenantId": {
-                        "isEncrypted": false,
-                        "isOptional": false,
-                        "type": "System.String"
-                    },
-                    "CertificateThumbprint": {
-                        "isEncrypted": false,
-                        "isOptional": false,
-                        "type": "System.String"
-                    },
-                    "SubscriptionId": {
-                        "isEncrypted": false,
-                        "isOptional": false,
-                        "type": "System.String"
-                    }
-                }
-            }
-        },   
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/AuditPolicyDsc')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Accounts')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Advisor')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Aks')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.AnalysisServices')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.ApiManagement')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.AppConfiguration')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.ApplicationInsights')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Attestation')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Automation')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Batch')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Billing')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Cdn')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.CloudService')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.CognitiveServices')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Compute')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.ContainerInstance')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.ContainerRegistry')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.CosmosDB')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.DataBoxEdge')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Databricks')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.DataFactory')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.DataLakeAnalytics')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.DataLakeStore')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.DataShare')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.DeploymentManager')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.DesktopVirtualization')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.DevTestLabs')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Dns')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.EventGrid')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.EventHub')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.FrontDoor')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Functions')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.HDInsight')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.HealthcareApis')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.IotHub')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.KeyVault')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Kusto')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.LogicApp')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.MachineLearning')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Maintenance')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.ManagedServiceIdentity')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.ManagedServices')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.MarketplaceOrdering')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Media')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Migrate')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Monitor')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.MySql')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Network')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.NotificationHubs')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.OperationalInsights')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.PolicyInsights')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.PostgreSql')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.PowerBIEmbedded')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.PrivateDns')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.RecoveryServices')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.RedisCache')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.RedisEnterpriseCache')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Relay')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.ResourceMover')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Resources')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Security')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.SecurityInsights')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.ServiceBus')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.ServiceFabric')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.SignalR')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Sql')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.SqlVirtualMachine')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.StackHCI')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Storage')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.StorageSync')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.StreamAnalytics')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Support')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Synapse')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.TrafficManager')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Az.Websites')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Azure')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Azure.Storage')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/AzureRM.Automation')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/AzureRM.Compute')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/AzureRM.profile')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/AzureRM.Resources')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/AzureRM.Sql')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/AzureRM.Storage')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/ComputerManagementDsc')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/ExchangeOnlineManagement')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/GPRegistryPolicyParser')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Microsoft.Graph.Authentication')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Microsoft.Graph.DeviceManagement.Enrolment')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Microsoft.Graph.Groups')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Microsoft.Graph.Identity.DirectoryManagement')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Microsoft.Graph.Identity.SignIns')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Microsoft.Graph.Users')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Microsoft.Online.SharePoint.PowerShell')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Microsoft.PowerApps.Administration.PowerShell')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Microsoft.PowerShell.Core')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Microsoft.PowerShell.Diagnostics')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Microsoft.PowerShell.Management')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Microsoft.PowerShell.Security')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Microsoft.PowerShell.Utility')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Microsoft.WSMan.Management')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/MicrosoftTeams')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/Orchestrator.AssetManagement.Cmdlets')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/PnP.PowerShell')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/PSDscResources')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/SecurityPolicyDsc')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/StateConfigCompositeResources')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/xDSCDomainjoin')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/xPowerShellExecutionPolicy')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/xRemoteDesktopAdmin')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "contentLink": {}
-            }
-        },
-        {
+            "apiVersion": "2020-01-13-preview",
             "type": "Microsoft.Automation/automationAccounts/runbooks",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/scubagear_1')]",
-            "location": "eastus",
+            "name": "[concat(parameters('automationAccountName'), '/', variables('asrScripts').runbooks[copyIndex()].Name)]",
+            "location": "[parameters('automationRegion')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
+                "[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
             ],
+            "copy": {
+                "name": "runbooksLoop",
+                "count": "[length(variables('asrScripts').runbooks)]"
+            },
             "properties": {
-                "runbookType": "PowerShell",
-                "logVerbose": false,
+                "description": "[variables('asrScripts').runbooks[copyIndex()].description]",
+                "runbookType": "[variables('asrScripts').runbooks[copyIndex()].type]",
                 "logProgress": false,
-                "logActivityTrace": 0,
+                "logVerbose": true,
                 "publishContentLink": {
-                    "uri": "https://github.com/maddev333/scubaweb_templates/blob/main/src/scuba_aadrunbook.ps1",
-                    "version": "1"
+                    "uri": "[variables('asrScripts').runbooks[copyIndex()].url]",
+                    "version": "[variables('asrScripts').runbooks[copyIndex()].version]"
                 }
             }
         },
         {
-            "type": "Microsoft.Automation/automationAccounts/webhooks",
-            "apiVersion": "2015-10-31",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/scubahook')]",
+            "apiVersion": "2020-01-13-preview",
+            "type": "Microsoft.Automation/automationAccounts/modules",
+            "name": "[concat(parameters('automationAccountName'), '/', variables('azureRmProfile').name)]",
+            "location": "[parameters('automationRegion')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
+                "[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
             ],
             "properties": {
-                "isEnabled": true,
-                "expiryTime": "2023-12-22T23:47:35.965+00:00",
-                "runbook": {
-                    "name": "scubagear_1"
+                "contentLink": {
+                    "uri": "[variables('azureRmProfile').url]"
+                }
+            }
+        },
+        {
+            "apiVersion": "2020-01-13-preview",
+            "type": "Microsoft.Automation/automationAccounts/modules",
+            "name": "[concat(parameters('automationAccountName'), '/', variables('asrScripts').modules[copyIndex()].Name)]",
+            "location": "[parameters('automationRegion')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]",
+                "[resourceId('Microsoft.Automation/automationAccounts/modules/', parameters('automationAccountName'), variables('azureRmProfile').name)]"
+            ],
+            "copy": {
+                "name": "modulesLoop",
+                "count": "[length(variables('asrScripts').modules)]"
+            },
+            "properties": {
+                "contentLink": {
+                    "uri": "[variables('asrScripts').modules[copyIndex()].url]"
                 }
             }
         }
-    ]
+    ],
+    "outputs": {}
 }
