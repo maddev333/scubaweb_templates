@@ -30,20 +30,6 @@
             }
         },
         {
-            "type": "Microsoft.Automation/automationAccounts/certificates",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/AzureRunAsCertificate')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "description": "This certificate is used to authenticate with the service principal that was automatically created for this account. For details on this service principal and certificate, or to recreate them, go to this account’s Settings. For example usage, see the tutorial runbook in this account.",
-                "isExportable": true,
-                "thumbprint": "D818B52952372AFB2EFE626EEAC17C711B59FC31",
-                "base64Value": "[parameters('certificates_AzureRunAsCertificate_base64Value')]"
-            }
-        },
-        {
             "type": "Microsoft.Automation/automationAccounts/connections",
             "apiVersion": "2022-08-08",
             "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/AzureRunAsConnection')]",
