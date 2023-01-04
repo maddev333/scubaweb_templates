@@ -2,11 +2,19 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "automationAccounts_runbooksact_name": {
-            "defaultValue": "runbooksact_auto",
-            "type": "String"
-        }
-    },
+        "automationAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the name of your Automation Account"
+            }
+        },
+        "modulesUri": {
+            "type": "string",
+            "defaultValue": "https://devopsgallerystorage.blob.core.windows.net/packages/",
+            "metadata": {
+                "description": "Default modules URI"
+            }
+        },
     "variables": {},
     "resources": [
         {
