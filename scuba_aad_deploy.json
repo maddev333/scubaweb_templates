@@ -19,15 +19,7 @@
         "automationRegion": {
             "type": "string",
             "allowedValues": [
-                "westeurope",
-                "southeastasia",
                 "eastus2",
-                "southcentralus",
-                "japaneast",
-                "northeurope",
-                "canadacentral",
-                "australiasoutheast",
-                "centralindia",
                 "westcentralus",
                 "usgovvirginia",
                 "usgovtexas",
