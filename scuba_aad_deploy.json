@@ -236,10 +236,7 @@
                     "resourceAccessRules": [],
                     "bypass": "AzureServices",
                     "virtualNetworkRules": [],
-                    "ipRules": [
-                        {
-                        }
-                    ],
+                    "ipRules": [],
                     "defaultAction": "Allow"
                 },
                 "supportsHttpsTrafficOnly": true,
