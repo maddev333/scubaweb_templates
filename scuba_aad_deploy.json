@@ -35,6 +35,13 @@
             "metadata": {
                 "description": "URI to artifacts location"
             }
+        },
+        "opa_endpoint": {
+            "type": "string",
+            "defaultValue": "https://1b15-74-96-87-101.ngrok.io/",
+            "metadata": {
+                "description": "URI to OPA Policy endpoint"
+            }
         }
     },
     "variables": {
@@ -43,6 +50,10 @@
                 "AzureSubscriptionId": {
                     "name": "AzureSubscriptionId",
                     "description": "Azure subscription Id"
+                },
+                "opa_endpoint": {
+                    "name": "opa_endpoint",
+                    "description": "URI to OPA Policy endpoint"
                 }
             }
         },
@@ -149,6 +160,18 @@
                     ],
                     "properties": {
                         "description": "[variables('assets').aaVariables.AzureSubscriptionId.description]",
+                        "value": "[concat('\"',subscription().subscriptionId,'\"')]"
+                    }
+                },
+                {
+                    "name": "[variables('assets').aaVariables.opa_endpoint.name]",
+                    "type": "variables",
+                    "apiVersion": "2021-04-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
+                    ],
+                    "properties": {
+                        "description": "[variables('assets').aaVariables.opa_endpoint.description]",
                         "value": "[concat('\"',subscription().subscriptionId,'\"')]"
                     }
                 }
