@@ -1,0 +1,39 @@
+{
+  "handler": "Microsoft.Compute.SingleVm",
+  "version": "0.0.1-preview",
+  "parameters": {
+    "allowManagedDiskDeployments": "False",
+    "osPlatform": "Linux",
+    "recommendedSizes": [
+      "Standard_A2",
+      "Standard_A2_v2",
+      "Standard_DS2",
+      "Standard_DS2_v2",
+      "Standard_D2_v3",
+      "Standard_D2s_v3"
+    ],
+    "imageReference": {
+      "publisher": "RedHat",
+      "offer": "RHEL",
+      "sku": "8-lvm-gen2",
+      "version": "latest"
+    },
+    "diskType": "Standard",
+    "dataDisks": [],
+    "securityType": "TrustedLaunchSupported",
+    "supportsNVMe": "False",
+    "supportsHibernation": "False",
+    "supportsSriov": true,
+    "supportsAutomaticOsImageUpgrade": false,
+    "supportsAutomanage": true,
+    "patchOptions": {
+      "supportsHotpatch": false,
+      "patchOrchestrationOptions": [
+        "ImageDefault"
+      ]
+    },
+    "supportsExtensions": true,
+    "supportsBackup": true,
+    "supportsCloudInit": false
+  }
+}
