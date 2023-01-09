@@ -117,6 +117,10 @@
                     "url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.identity.directorymanagement.1.19.0.nupkg"
                 },
                 {
+                    "name": "Microsoft.Graph.DeviceManagement.Enrolment",
+                    "url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.devicemanagement.enrolment.1.19.0.nupkg"
+                },
+                {
                     "name": "Microsoft.Graph.Identity.SignIns",
                     "url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.identity.signins.1.19.0.nupkg"
                 },
