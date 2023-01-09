@@ -297,3 +297,72 @@ catch {
 }
 
 Export-AADProvider
+
+# Create variable
+$containerName = "runbook"
+
+$ctx = New-AzStorageContext -StorageAccountName 'storageaccountfunctad03' -UseConnectedAccount
+# Retrieve container
+$container = Get-AzStorageContainer -Name $containerName -Context $ctx
+
+ 
+# Display metadata
+$properties = $container.BlobContainerClient.GetProperties()
+#Write-Host $container.Name "metadata:" 
+#Write-Host $properties.Value.Metadata
+
+$StorageURL = "https://scubaweb.blob.core.windows.net/`$web"
+#Write-Output $StorageURL
+$FileName = "aad.json"
+$SASToken = ""
+$Content = $global:json1
+$blobUploadParams = @{
+    URI = "{0}/{1}?{2}" -f $StorageURL, $FileName, $SASToken
+    Method = "PUT"
+    Headers = @{
+        'x-ms-blob-type' = "BlockBlob"
+        'x-ms-blob-content-disposition' = "attachment; filename=`"{0}`"" -f $FileName
+        'x-ms-meta-m1' = 'v1'
+        'x-ms-meta-m2' = 'v2'
+    }
+    Body = $Content
+    Infile = $FileToUpload
+}
+Invoke-RestMethod @blobUploadParams
+
+Write-Output "Storing Raw Data"
+
+$opaURL = "https://5841-74-96-87-101.ngrok.io/v1/data/aad"
+$Content = $global:json1
+$opaUploadParams = @{
+    URI = $opaURL
+    Method = "POST"
+    Headers = @{
+        'Content-Type' = "application/json"
+    }
+    Body = $Content
+    
+}
+$response = Invoke-RestMethod @opaUploadParams
+
+$response = $response | ConvertTo-Json
+
+Write-Output "Checking against policy"
+
+$FileName = "test.json"
+$Content = $response
+$blobUploadParams = @{
+    URI = "{0}/{1}?{2}" -f $StorageURL, $FileName, $SASToken
+    Method = "PUT"
+    Headers = @{
+        'x-ms-blob-type' = "BlockBlob"
+        'x-ms-blob-content-disposition' = "attachment; filename=`"{0}`"" -f $FileName
+        'x-ms-meta-m1' = 'v1'
+        'x-ms-meta-m2' = 'v2'
+    }
+    Body = $Content
+    Infile = $FileToUpload
+}
+Invoke-RestMethod @blobUploadParams
+
+Write-Output "Uploaded report - Completed"
