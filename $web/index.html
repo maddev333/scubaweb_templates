@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link href="treeview.css" rel="stylesheet">
+	<script src="treeview.js"></script>
+  <title>JSON Object</title>
+  
+</head>
+<body>
+	<div id="json-container"></div>
+
+
+  <script>
+    // Set the storage account and access key
+    const storageAccount = 'scubaweb';
+
+    // Set the name of the container and file
+    const containerName = '$web';
+    const fileName = 'test.json';
+
+    // Construct the URL for the file
+    const url = `https://${storageAccount}.z13.web.core.windows.net/${fileName}`;
+    console.log(url);
+
+    // Set the authorization header
+    const headers = new Headers();
+    
+
+    // Fetch the JSON data from the file
+    fetch(url, {headers: headers})
+      .then(response => response.json())
+      .then(object => {
+        // Get the element to display the data
+        document.getElementById('json-container').innerHTML = JSONTree.create(object);
+
+        
+  })
+      .catch(error => {
+        console.error('An error occurred:', error);
+      });
+  </script>
+</body>
+</html>
