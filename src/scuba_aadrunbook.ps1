@@ -310,20 +310,7 @@ catch {
 
 Export-AADProvider
 
-# Create variable
-$containerName = "runbook"
-
-$ctx = New-AzStorageContext -StorageAccountName 'storageaccountfunctad03' -UseConnectedAccount
-# Retrieve container
-$container = Get-AzStorageContainer -Name $containerName -Context $ctx
-
- 
-# Display metadata
-$properties = $container.BlobContainerClient.GetProperties()
-#Write-Host $container.Name "metadata:" 
-#Write-Host $properties.Value.Metadata
-
-$StorageURL = "https://scubaweb.blob.core.windows.net/`$web"
+$StorageURL = "https://scubarunbook.blob.core.windows.net/`$web"
 #Write-Output $StorageURL
 $FileName = "aad.json"
 $SASToken = ""
