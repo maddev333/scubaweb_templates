@@ -348,7 +348,8 @@ $response = $response | ConvertTo-Json
 
 Write-Output "Checking against policy"
 
-$FileName = "test.json"
+$date = Get-Date -Format u
+$FileName = "test" + $date +".json"
 $Content = $response
 $blobUploadParams = @{
     URI = "{0}/{1}?{2}" -f $StorageURL, $FileName, $SASToken
