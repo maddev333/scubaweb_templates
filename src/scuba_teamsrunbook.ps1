@@ -12,8 +12,8 @@ function Export-TeamsProvider {
     #Import-Module (Join-Path -Path $HelperFolderPath -ChildPath "CommandTracker.psm1")
     #$Tracker = Get-CommandTracker
 
-    $TenantInfo = Get-CsTenant
-    Write-Output $TenantInfo | ConvertTo-Json
+    $TenantInfo = Get-CsTenant | ConvertTo-Json
+    #Write-Output $TenantInfo | ConvertTo-Json
     $MeetingPolicies = Get-CsTeamsMeetingPolicy | ConvertTo-Json
     $FedConfig = Get-CsTenantFederationConfiguration | ConvertTo-Json
     $ClientConfig = Get-CsTeamsClientConfiguration | ConvertTo-Json
@@ -24,22 +24,32 @@ function Export-TeamsProvider {
     #$TeamsUnSuccessfulCommands = ConvertTo-Json @($Tracker.GetUnSuccessfulCommands())
 
     # Note the spacing and the last comma in the json is important
-    $json = @"
+    $global:json = @"
+     {"input":{
     "teams_tenant_info": $TenantInfo,
     "meeting_policies": $MeetingPolicies,
     "federation_configuration": $FedConfig,
     "client_configuration": $ClientConfig,
     "app_policies": $AppPolicies,
     "broadcast_policies": $BroadcastPolicies,
-    "teams_successful_commands": $TeamsSuccessfulCommands,
-    "teams_unsuccessful_commands": $TeamsUnSuccessfulCommands,
+    }
+    }
 "@
 
     # We need to remove the backslash characters from the
     # json, otherwise rego gets mad.
-    $json = $json.replace("\`"", "'")
-    $json = $json.replace("\", "")
-    $json
+    #$json = $json.replace("\`"", "'")
+    #$json = $json.replace("\", "")
+    #$json
+     # We need to remove the backslash characters from the
+    # json, otherwise rego gets mad.
+    $global:json = $global:json.replace("\`"", "'")
+    $global:json = $global:json.replace("\", "")
+
+    #Write-Output($json)
+    #$global:json1 = $global:json.replace("\,(?!\s*?[\{`"`'\w])", "")
+    #Write-Output($global:json)
+    $global:json1 = $global:json -replace "\,(?!\s*?[\{`"`'\w])",""
 }
 
 function Get-TeamsTenantDetail {
@@ -141,3 +151,64 @@ catch {
 
 #Get-AADTenantDetail
 Export-TeamsProvider
+
+
+#Write-Output "start the test"
+    
+$StorageURL = "https://scubaweb.blob.core.windows.net/`$web"
+#Write-Output $StorageURL
+$FileName = "teams.json"
+$SASToken = ""
+$Content = $global:json1
+$blobUploadParams = @{
+    URI = "{0}/{1}?{2}" -f $StorageURL, $FileName, $SASToken
+    Method = "PUT"
+    Headers = @{
+        'x-ms-blob-type' = "BlockBlob"
+        'x-ms-blob-content-disposition' = "attachment; filename=`"{0}`"" -f $FileName
+        'x-ms-meta-m1' = 'v1'
+        'x-ms-meta-m2' = 'v2'
+    }
+    Body = $Content
+    Infile = $FileToUpload
+}
+Invoke-RestMethod @blobUploadParams
+
+Write-Output "Storing Raw Data"
+Write-Output $global:json1
+
+$opaURL = "https://0a42-74-96-87-101.ngrok.io/v1/data/teams"
+$Content = $global:json1
+$opaUploadParams = @{
+    URI = $opaURL
+    Method = "POST"
+    Headers = @{
+        'Content-Type' = "application/json"
+    }
+    Body = $Content
+    
+}
+$response = Invoke-RestMethod @opaUploadParams
+
+$response = $response | ConvertTo-Json
+
+Write-Output "Checking against policy"
+
+$FileName = "test_teams.json"
+$Content = $response
+$blobUploadParams = @{
+    URI = "{0}/{1}?{2}" -f $StorageURL, $FileName, $SASToken
+    Method = "PUT"
+    Headers = @{
+        'x-ms-blob-type' = "BlockBlob"
+        'x-ms-blob-content-disposition' = "attachment; filename=`"{0}`"" -f $FileName
+        'x-ms-meta-m1' = 'v1'
+        'x-ms-meta-m2' = 'v2'
+    }
+    Body = $Content
+    Infile = $FileToUpload
+}
+Invoke-RestMethod @blobUploadParams
+
+Write-Output "Uploaded report - Completed"
+ 
