@@ -331,7 +331,7 @@ Invoke-RestMethod @blobUploadParams
 
 Write-Output "Storing Raw Data"
 
-$opaURL = "https://5841-74-96-87-101.ngrok.io/v1/data/aad"
+$opaURL = "https://opa.azurewebsites.net/v1/data/aad"
 $Content = $global:json1
 $opaUploadParams = @{
     URI = $opaURL
