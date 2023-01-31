@@ -1,347 +1,342 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "automationAccountName": {
-            "type": "string",
-             "defaultValue" : "scubarunbook",
-            "metadata": {
-                "description": "Specify the name of your Automation Account"
-            }
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"automationAccountName": {
+			"type": "string",
+			"defaultValue": "scubarunbook",
+			"metadata": {
+				"description": "Specify the name of your Automation Account"
+			}
+		},
+		"modulesUri": {
+			"type": "string",
+			"defaultValue": "https://devopsgallerystorage.blob.core.windows.net/packages/",
+			"metadata": {
+				"description": "Default modules URI"
+			}
+		},
+		"automationRegion": {
+			"type": "string",
+			"allowedValues": [
+				"eastus2",
+				"westcentralus",
+				"usgovvirginia",
+				"usgovtexas",
+				"usgovarizona"
+			],
+			"metadata": {
+				"description": "Specify the region for your automation account"
+			}
+		},
+		"_artifactsLocation": {
+			"type": "string",
+			"defaultValue": "https://github.com/maddev333/scubaweb_templates/",
+			"metadata": {
+				"description": "URI to artifacts location"
+			}
+		},
+		"opa_endpoint": {
+			"type": "string",
+			"defaultValue": "https://1b15-74-96-87-101.ngrok.io/",
+			"metadata": {
+				"description": "URI to OPA Policy endpoint"
+			}
+		}
+	},
+	"variables": {
+		"assets": {
+			"aaVariables": {
+				"AzureSubscriptionId": {
+					"name": "AzureSubscriptionId",
+					"description": "Azure subscription Id"
+				},
+				"opa_endpoint": {
+					"name": "opa_endpoint",
+					"description": "URI to OPA Policy endpoint"
+				}
+			}
+		},
+		"asrScripts": {
+			"runbooks": [{
+				"name": "scuba_aadrunbook",
+				"url": "[uri(parameters('_artifactsLocation'), 'src/scuba_aadrunbook.ps1')]",
+				"version": "1.0.0.0",
+				"type": "PowerShell",
+				"description": "AAD Scuba provider"
+			}],
+			"modules": [{
+					"name": "AzureRm.Compute",
+					"url": "[uri(parameters('modulesUri'),'azurerm.compute.2.8.0.nupkg')]"
+				},
+				{
+					"name": "AzureRm.Resources",
+					"url": "[uri(parameters('modulesUri'),'azurerm.resources.3.7.0.nupkg')]"
+				},
+				{
+					"name": "AzureRm.Network",
+					"url": "[uri(parameters('modulesUri'),'azurerm.network.3.6.0.nupkg')]"
+				},
+				{
+					"name": "AzureRm.Automation",
+					"url": "[uri(parameters('modulesUri'),'azurerm.automation.1.0.3.nupkg')]"
+				},
+				{
+					"name": "exchangeonlinemanagement",
+					"url": "[uri(parameters('modulesUri'),'exchangeonlinemanagement.3.0.0.nupkg')]"
+				},
+				{
+					"name": "MicrosoftTeams",
+					"url": "https://psg-prod-eastus.azureedge.net/packages/microsoftteams.4.9.1.nupkg"
+				},
+				{
+					"name": "Microsoft.Online.SharePoint.PowerShell",
+					"url": "[uri(parameters('modulesUri'),'microsoft.online.sharepoint.powershell.16.0.23109.12000.nupkg')]"
+				},
+				{
+					"name": "Microsoft.PowerApps.Administration.PowerShell",
+					"url": "[uri(parameters('modulesUri'),'microsoft.powerapps.administration.powershell.2.0.154.nupkg')]"
+				},
+				{
+					"name": "Microsoft.PowerApps.PowerShell",
+					"url": "[uri(parameters('modulesUri'),'microsoft.powerapps.powershell.1.0.26.nupkg')]"
+				},
+				{
+					"name": "Microsoft.Graph.Authentication",
+					"url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.authentication.1.19.0.nupkg"
+				},
+				{
+					"name": "Microsoft.Graph.Groups",
+					"url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.groups.1.19.0.nupkg"
+				},
+				{
+					"name": "Microsoft.Graph.Identity.DirectoryManagement",
+					"url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.identity.directorymanagement.1.19.0.nupkg"
+				},
+				{
+					"name": "Microsoft.Graph.DeviceManagement.Enrolment",
+					"url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.devicemanagement.enrolment.1.19.0.nupkg"
+				},
+				{
+					"name": "Microsoft.Graph.Identity.SignIns",
+					"url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.identity.signins.1.19.0.nupkg"
+				},
+				{
+					"name": "Microsoft.Graph.Users",
+					"url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.users.1.19.0.nupkg"
+				}
+
+			]
+		},
+		"azureRmProfile": {
+			"name": "AzureRm.Profile",
+			"url": "[uri(parameters('modulesUri'),'azurerm.profile.2.7.0.nupkg')]"
+		}
+	},
+	"resources": [{
+			"name": "[parameters('automationAccountName')]",
+			"type": "Microsoft.Automation/automationAccounts",
+			"apiVersion": "2021-04-01",
+			"location": "[parameters('automationRegion')]",
+			"identity": {
+				"type": "SystemAssigned"
+			},
+			"properties": {
+				"sku": {
+					"name": "Basic"
+				},
+				"encryption": {
+					"keySource": "Microsoft.Automation",
+					"identity": {}
+				}
+			},
+			"resources": [{
+					"name": "[variables('assets').aaVariables.AzureSubscriptionId.name]",
+					"type": "variables",
+					"apiVersion": "2021-04-01",
+					"dependsOn": [
+						"[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
+					],
+					"properties": {
+						"description": "[variables('assets').aaVariables.AzureSubscriptionId.description]",
+						"value": "[concat('\"',subscription().subscriptionId,'\"')]"
+					}
+				},
+				{
+					"name": "[variables('assets').aaVariables.opa_endpoint.name]",
+					"type": "variables",
+					"apiVersion": "2021-04-01",
+					"dependsOn": [
+						"[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
+					],
+					"properties": {
+						"description": "[variables('assets').aaVariables.opa_endpoint.description]",
+						"value": "[concat('\"',subscription().subscriptionId,'\"')]"
+					}
+				}
+			]
+		},
+		{
+			"apiVersion": "2020-01-13-preview",
+			"type": "Microsoft.Automation/automationAccounts/runbooks",
+			"name": "[concat(parameters('automationAccountName'), '/','scuba_aadrunbook')]",
+			"location": "[parameters('automationRegion')]",
+			"dependsOn": [
+				"[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
+			],
+			"properties": {
+				"description": "AAD Scuba provider",
+				"runbookType": "PowerShell",
+				"logProgress": false,
+				"logVerbose": true,
+				"publishContentLink": {
+					"uri": "https://raw.githubusercontent.com/maddev333/scubaweb_templates/main/src/scuba_aadrunbook.ps1",
+					"version": "1"
+				}
+			} 
         },
-        "modulesUri": {
-            "type": "string",
-            "defaultValue": "https://devopsgallerystorage.blob.core.windows.net/packages/",
-            "metadata": {
-                "description": "Default modules URI"
-            }
-        },
-        "automationRegion": {
-            "type": "string",
-            "allowedValues": [
-                "eastus2",
-                "westcentralus",
-                "usgovvirginia",
-                "usgovtexas",
-                "usgovarizona"
-            ],
-            "metadata": {
-                "description": "Specify the region for your automation account"
-            }
-        },
-        "_artifactsLocation": {
-            "type": "string",
-            "defaultValue": "https://github.com/maddev333/scubaweb_templates/",
-            "metadata": {
-                "description": "URI to artifacts location"
-            }
-        },
-        "opa_endpoint": {
-            "type": "string",
-            "defaultValue": "https://1b15-74-96-87-101.ngrok.io/",
-            "metadata": {
-                "description": "URI to OPA Policy endpoint"
-            }
-        }
-    },
-    "variables": {
-        "assets": {
-            "aaVariables": {
-                "AzureSubscriptionId": {
-                    "name": "AzureSubscriptionId",
-                    "description": "Azure subscription Id"
-                },
-                "opa_endpoint": {
-                    "name": "opa_endpoint",
-                    "description": "URI to OPA Policy endpoint"
-                }
-            }
-        },
-        "asrScripts": {
-            "runbooks": [
-                {
-                    "name": "scuba_aadrunbook",
-                    "url": "[uri(parameters('_artifactsLocation'), 'src/scuba_aadrunbook.ps1')]",
-                    "version": "1.0.0.0",
-                    "type": "PowerShell",
-                    "description": "AAD Scuba provider"
-                }
-            ],
-            "modules": [
-                {
-                    "name": "AzureRm.Compute",
-                    "url": "[uri(parameters('modulesUri'),'azurerm.compute.2.8.0.nupkg')]"
-                },
-                {
-                    "name": "AzureRm.Resources",
-                    "url": "[uri(parameters('modulesUri'),'azurerm.resources.3.7.0.nupkg')]"
-                },
-                {
-                    "name": "AzureRm.Network",
-                    "url": "[uri(parameters('modulesUri'),'azurerm.network.3.6.0.nupkg')]"
-                },
-                {
-                    "name": "AzureRm.Automation",
-                    "url": "[uri(parameters('modulesUri'),'azurerm.automation.1.0.3.nupkg')]"
-                },
-                {
-                    "name": "exchangeonlinemanagement",
-                    "url": "[uri(parameters('modulesUri'),'exchangeonlinemanagement.3.0.0.nupkg')]"
-                },
-                {
-                    "name": "MicrosoftTeams",
-                    "url": "https://psg-prod-eastus.azureedge.net/packages/microsoftteams.4.9.1.nupkg"
-                },
-                {
-                    "name": "Microsoft.Online.SharePoint.PowerShell",
-                    "url": "[uri(parameters('modulesUri'),'microsoft.online.sharepoint.powershell.16.0.23109.12000.nupkg')]"
-                },
-                {
-                    "name": "Microsoft.PowerApps.Administration.PowerShell",
-                    "url": "[uri(parameters('modulesUri'),'microsoft.powerapps.administration.powershell.2.0.154.nupkg')]"
-                },
-                {
-                    "name": "Microsoft.PowerApps.PowerShell",
-                    "url": "[uri(parameters('modulesUri'),'microsoft.powerapps.powershell.1.0.26.nupkg')]"
-                },
-                {
-                    "name": "Microsoft.Graph.Authentication",
-                    "url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.authentication.1.19.0.nupkg"
-                },
-                {
-                    "name": "Microsoft.Graph.Groups",
-                    "url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.groups.1.19.0.nupkg"
-                },
-                {
-                    "name": "Microsoft.Graph.Identity.DirectoryManagement",
-                    "url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.identity.directorymanagement.1.19.0.nupkg"
-                },
-                {
-                    "name": "Microsoft.Graph.DeviceManagement.Enrolment",
-                    "url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.devicemanagement.enrolment.1.19.0.nupkg"
-                },
-                {
-                    "name": "Microsoft.Graph.Identity.SignIns",
-                    "url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.identity.signins.1.19.0.nupkg"
-                },
-                {
-                    "name": "Microsoft.Graph.Users",
-                    "url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.users.1.19.0.nupkg"
-                }
-                
-            ]
-        },
-        "azureRmProfile": {
-            "name": "AzureRm.Profile",
-            "url": "[uri(parameters('modulesUri'),'azurerm.profile.2.7.0.nupkg')]"
-        }
-    },
-    "resources": [
-        {
-            "name": "[parameters('automationAccountName')]",
-            "type": "Microsoft.Automation/automationAccounts",
-            "apiVersion": "2021-04-01",
-            "location": "[parameters('automationRegion')]",
-            "identity": {
-                "type": "SystemAssigned"
-            },
-            "properties": {
-                "sku": {
-                    "name": "Basic"
-                },
-                "encryption": {
-                    "keySource": "Microsoft.Automation",
-                    "identity": {}
-                }
-            },
-            "resources": [
-                {
-                    "name": "[variables('assets').aaVariables.AzureSubscriptionId.name]",
-                    "type": "variables",
-                    "apiVersion": "2021-04-01",
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
-                    ],
-                    "properties": {
-                        "description": "[variables('assets').aaVariables.AzureSubscriptionId.description]",
-                        "value": "[concat('\"',subscription().subscriptionId,'\"')]"
-                    }
-                },
-                {
-                    "name": "[variables('assets').aaVariables.opa_endpoint.name]",
-                    "type": "variables",
-                    "apiVersion": "2021-04-01",
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
-                    ],
-                    "properties": {
-                        "description": "[variables('assets').aaVariables.opa_endpoint.description]",
-                        "value": "[concat('\"',subscription().subscriptionId,'\"')]"
-                    }
-                }
-            ]
-        },
-        {
-            "apiVersion": "2020-01-13-preview",
-            "type": "Microsoft.Automation/automationAccounts/runbooks",
-            "name": "[concat(parameters('automationAccountName'), '/','scuba_aadrunbook')]",
-            "location": "[parameters('automationRegion')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
-            ],
-            "properties": {
-                "description": "AAD Scuba provider",
-                "runbookType": "PowerShell",
-                "logProgress": false,
-                "logVerbose": true,
-                "publishContentLink": {
-                    "uri": "https://raw.githubusercontent.com/maddev333/scubaweb_templates/main/src/scuba_aadrunbook.ps1",
-                    "version": "1"
-                }
-            },
             {
-            "type": "Microsoft.Automation/automationAccounts/variables",
-            "apiVersion": "2022-08-08",
-            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/tes')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
-            ],
-            "properties": {
-                "isEncrypted": false,
-                "value": "\"test\""
-            }
-           },
-        {
-            "apiVersion": "2020-01-13-preview",
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "name": "[concat(parameters('automationAccountName'), '/', variables('azureRmProfile').name)]",
-            "location": "[parameters('automationRegion')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
-            ],
-            "properties": {
-                "contentLink": {
-                    "uri": "[variables('azureRmProfile').url]"
-                }
-            }
-        },
-        {
-            "apiVersion": "2020-01-13-preview",
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "name": "[concat(parameters('automationAccountName'), '/', variables('asrScripts').modules[copyIndex()].Name)]",
-            "location": "[parameters('automationRegion')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]",
-                "[resourceId('Microsoft.Automation/automationAccounts/modules/', parameters('automationAccountName'), variables('azureRmProfile').name)]"
-            ],
-            "copy": {
-                "name": "modulesLoop",
-                "count": "[length(variables('asrScripts').modules)]"
-            },
-            "properties": {
-                "contentLink": {
-                    "uri": "[variables('asrScripts').modules[copyIndex()].url]"
-                }
-            }
-        },
-         {
-            "type": "Microsoft.Storage/storageAccounts",
-            "apiVersion": "2022-05-01",
-            "name": "[parameters('automationAccountName')]",
-            "location": "[parameters('automationRegion')]",
-            "sku": {
-                "name": "Standard_LRS",
-                "tier": "Standard"
-            },
-            "kind": "StorageV2",
-            "properties": {
-                "dnsEndpointType": "Standard",
-                "defaultToOAuthAuthentication": false,
-                "publicNetworkAccess": "Enabled",
-                "allowCrossTenantReplication": true,
-                "minimumTlsVersion": "TLS1_2",
-                "allowBlobPublicAccess": true,
-                "allowSharedKeyAccess": true,
-                "networkAcls": {
-                    "resourceAccessRules": [],
-                    "bypass": "AzureServices",
-                    "virtualNetworkRules": [],
-                    "ipRules": [],
-                    "defaultAction": "Allow"
-                },
-                "supportsHttpsTrafficOnly": true,
-                "encryption": {
-                    "requireInfrastructureEncryption": false,
-                    "services": {
-                        "file": {
-                            "keyType": "Account",
-                            "enabled": true
-                        },
-                        "blob": {
-                            "keyType": "Account",
-                            "enabled": true
-                        }
-                    },
-                    "keySource": "Microsoft.Storage"
-                },
-                "accessTier": "Hot"
-            }
-        },
-        {
-            "type": "Microsoft.Storage/storageAccounts/blobServices",
-            "apiVersion": "2022-05-01",
-            "name": "[concat(parameters('automationAccountName'), '/default')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('automationAccountName'))]"
-            ],
-            "sku": {
-                "name": "Standard_LRS",
-                "tier": "Standard"
-            },
-            "properties": {
-                "changeFeed": {
-                    "enabled": false
-                },
-                "restorePolicy": {
-                    "enabled": false
-                },
-                "containerDeleteRetentionPolicy": {
-                    "enabled": true,
-                    "days": 7
-                },
-                "cors": {
-                    "corsRules": []
-                },
-                "deleteRetentionPolicy": {
-                    "allowPermanentDelete": false,
-                    "enabled": true,
-                    "days": 7
-                },
-                "isVersioningEnabled": false
-            }
-        },
-        {
-            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-            "apiVersion": "2022-05-01",
-            "name": "[concat(parameters('automationAccountName'), '/default/$web')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('automationAccountName'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('automationAccountName'))]"
-            ],
-            "properties": {
-                "immutableStorageWithVersioning": {
-                    "enabled": false
-                },
-                "defaultEncryptionScope": "$account-encryption-key",
-                "denyEncryptionScopeOverride": false,
-                "publicAccess": "None"
-            }
-        }
-    ],
-    "outputs": {
-    "MyOutputs" : {
-        "type" : "string",
-        "value" : "[parameters('automationAccountName')]"
-      }
-    }
-}
+				"type": "Microsoft.Automation/automationAccounts/variables",
+				"name": "[concat(parameters('automationAccounts_runbooksact_name'), '/tes')]",
+				"dependsOn": [
+					"[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
+				],
+				"properties": {
+					"isEncrypted": false,
+					"value": "\"test\""
+				}
+			},
+			{
+				"apiVersion": "2020-01-13-preview",
+				"type": "Microsoft.Automation/automationAccounts/modules",
+				"name": "[concat(parameters('automationAccountName'), '/', variables('azureRmProfile').name)]",
+				"location": "[parameters('automationRegion')]",
+				"dependsOn": [
+					"[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
+				],
+				"properties": {
+					"contentLink": {
+						"uri": "[variables('azureRmProfile').url]"
+					}
+				}
+			},
+			{
+				"apiVersion": "2020-01-13-preview",
+				"type": "Microsoft.Automation/automationAccounts/modules",
+				"name": "[concat(parameters('automationAccountName'), '/', variables('asrScripts').modules[copyIndex()].Name)]",
+				"location": "[parameters('automationRegion')]",
+				"dependsOn": [
+					"[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]",
+					"[resourceId('Microsoft.Automation/automationAccounts/modules/', parameters('automationAccountName'), variables('azureRmProfile').name)]"
+				],
+				"copy": {
+					"name": "modulesLoop",
+					"count": "[length(variables('asrScripts').modules)]"
+				},
+				"properties": {
+					"contentLink": {
+						"uri": "[variables('asrScripts').modules[copyIndex()].url]"
+					}
+				}
+			},
+			{
+				"type": "Microsoft.Storage/storageAccounts",
+				"apiVersion": "2022-05-01",
+				"name": "[parameters('automationAccountName')]",
+				"location": "[parameters('automationRegion')]",
+				"sku": {
+					"name": "Standard_LRS",
+					"tier": "Standard"
+				},
+				"kind": "StorageV2",
+				"properties": {
+					"dnsEndpointType": "Standard",
+					"defaultToOAuthAuthentication": false,
+					"publicNetworkAccess": "Enabled",
+					"allowCrossTenantReplication": true,
+					"minimumTlsVersion": "TLS1_2",
+					"allowBlobPublicAccess": true,
+					"allowSharedKeyAccess": true,
+					"networkAcls": {
+						"resourceAccessRules": [],
+						"bypass": "AzureServices",
+						"virtualNetworkRules": [],
+						"ipRules": [],
+						"defaultAction": "Allow"
+					},
+					"supportsHttpsTrafficOnly": true,
+					"encryption": {
+						"requireInfrastructureEncryption": false,
+						"services": {
+							"file": {
+								"keyType": "Account",
+								"enabled": true
+							},
+							"blob": {
+								"keyType": "Account",
+								"enabled": true
+							}
+						},
+						"keySource": "Microsoft.Storage"
+					},
+					"accessTier": "Hot"
+				}
+			},
+			{
+				"type": "Microsoft.Storage/storageAccounts/blobServices",
+				"apiVersion": "2022-05-01",
+				"name": "[concat(parameters('automationAccountName'), '/default')]",
+				"dependsOn": [
+					"[resourceId('Microsoft.Storage/storageAccounts', parameters('automationAccountName'))]"
+				],
+				"sku": {
+					"name": "Standard_LRS",
+					"tier": "Standard"
+				},
+				"properties": {
+					"changeFeed": {
+						"enabled": false
+					},
+					"restorePolicy": {
+						"enabled": false
+					},
+					"containerDeleteRetentionPolicy": {
+						"enabled": true,
+						"days": 7
+					},
+					"cors": {
+						"corsRules": []
+					},
+					"deleteRetentionPolicy": {
+						"allowPermanentDelete": false,
+						"enabled": true,
+						"days": 7
+					},
+					"isVersioningEnabled": false
+				}
+			},
+			{
+				"type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+				"apiVersion": "2022-05-01",
+				"name": "[concat(parameters('automationAccountName'), '/default/$web')]",
+				"dependsOn": [
+					"[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('automationAccountName'), 'default')]",
+					"[resourceId('Microsoft.Storage/storageAccounts', parameters('automationAccountName'))]"
+				],
+				"properties": {
+					"immutableStorageWithVersioning": {
+						"enabled": false
+					},
+					"defaultEncryptionScope": "$account-encryption-key",
+					"denyEncryptionScopeOverride": false,
+					"publicAccess": "None"
+				}
+			}
+		],
+		"outputs": {
+			"MyOutputs": {
+				"type": "string",
+				"value": "[parameters('automationAccountName')]"
+			}
+		}
+	}
