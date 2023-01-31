@@ -38,11 +38,18 @@
 		},
 		"opa_endpoint": {
 			"type": "string",
-			"defaultValue": "https://1b15-74-96-87-101.ngrok.io/",
+			"defaultValue": "https://opa.azurewebsites.net/",
 			"metadata": {
 				"description": "URI to OPA Policy endpoint"
 			}
-		}
+		},
+		"shared_sas_token": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"description": "SAS token for sharing"
+			}
+		},
 	},
 	"variables": {
 		"assets": {
@@ -54,7 +61,11 @@
 				"opa_endpoint": {
 					"name": "opa_endpoint",
 					"description": "URI to OPA Policy endpoint"
-				}
+				},
+				"shared_sas_token": {
+					"name": "Shared SAS Token",
+					"description": "SAS token for sharing"
+				},
 			}
 		},
 		"asrScripts": {
@@ -196,8 +207,9 @@
 			} 
         },
             {
-				"type": "Microsoft.Automation/automationAccounts/variables",
-				"name": "[concat(parameters('automationAccounts_runbooksact_name'), '/tes')]",
+				"apiVersion": "2020-01-13-preview",
+		                "type": "Microsoft.Automation/automationAccounts/variables",
+				"name": "[concat(parameters('automationAccountName'), '/','scuba_aadrunbook'), '/test')]",
 				"dependsOn": [
 					"[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
 				],
