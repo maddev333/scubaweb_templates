@@ -49,7 +49,7 @@
 			"metadata": {
 				"description": "SAS token for sharing"
 			}
-		},
+		}
 	},
 	"variables": {
 		"assets": {
@@ -65,7 +65,7 @@
 				"shared_sas_token": {
 					"name": "Shared SAS Token",
 					"description": "SAS token for sharing"
-				},
+				}
 			}
 		},
 		"asrScripts": {
@@ -204,151 +204,151 @@
 					"uri": "https://raw.githubusercontent.com/maddev333/scubaweb_templates/main/src/scuba_aadrunbook.ps1",
 					"version": "1"
 				}
-			} 
-        },
-            {
-				"apiVersion": "2020-01-13-preview",
-		                "type": "Microsoft.Automation/automationAccounts/variables",
-				"name": "[concat(parameters('automationAccountName'), '/','scuba_aadrunbook'), '/test')]",
-				"dependsOn": [
-					"[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
-				],
-				"properties": {
-					"isEncrypted": false,
-					"value": "\"test\""
-				}
-			},
-			{
-				"apiVersion": "2020-01-13-preview",
-				"type": "Microsoft.Automation/automationAccounts/modules",
-				"name": "[concat(parameters('automationAccountName'), '/', variables('azureRmProfile').name)]",
-				"location": "[parameters('automationRegion')]",
-				"dependsOn": [
-					"[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
-				],
-				"properties": {
-					"contentLink": {
-						"uri": "[variables('azureRmProfile').url]"
-					}
-				}
-			},
-			{
-				"apiVersion": "2020-01-13-preview",
-				"type": "Microsoft.Automation/automationAccounts/modules",
-				"name": "[concat(parameters('automationAccountName'), '/', variables('asrScripts').modules[copyIndex()].Name)]",
-				"location": "[parameters('automationRegion')]",
-				"dependsOn": [
-					"[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]",
-					"[resourceId('Microsoft.Automation/automationAccounts/modules/', parameters('automationAccountName'), variables('azureRmProfile').name)]"
-				],
-				"copy": {
-					"name": "modulesLoop",
-					"count": "[length(variables('asrScripts').modules)]"
-				},
-				"properties": {
-					"contentLink": {
-						"uri": "[variables('asrScripts').modules[copyIndex()].url]"
-					}
-				}
-			},
-			{
-				"type": "Microsoft.Storage/storageAccounts",
-				"apiVersion": "2022-05-01",
-				"name": "[parameters('automationAccountName')]",
-				"location": "[parameters('automationRegion')]",
-				"sku": {
-					"name": "Standard_LRS",
-					"tier": "Standard"
-				},
-				"kind": "StorageV2",
-				"properties": {
-					"dnsEndpointType": "Standard",
-					"defaultToOAuthAuthentication": false,
-					"publicNetworkAccess": "Enabled",
-					"allowCrossTenantReplication": true,
-					"minimumTlsVersion": "TLS1_2",
-					"allowBlobPublicAccess": true,
-					"allowSharedKeyAccess": true,
-					"networkAcls": {
-						"resourceAccessRules": [],
-						"bypass": "AzureServices",
-						"virtualNetworkRules": [],
-						"ipRules": [],
-						"defaultAction": "Allow"
-					},
-					"supportsHttpsTrafficOnly": true,
-					"encryption": {
-						"requireInfrastructureEncryption": false,
-						"services": {
-							"file": {
-								"keyType": "Account",
-								"enabled": true
-							},
-							"blob": {
-								"keyType": "Account",
-								"enabled": true
-							}
-						},
-						"keySource": "Microsoft.Storage"
-					},
-					"accessTier": "Hot"
-				}
-			},
-			{
-				"type": "Microsoft.Storage/storageAccounts/blobServices",
-				"apiVersion": "2022-05-01",
-				"name": "[concat(parameters('automationAccountName'), '/default')]",
-				"dependsOn": [
-					"[resourceId('Microsoft.Storage/storageAccounts', parameters('automationAccountName'))]"
-				],
-				"sku": {
-					"name": "Standard_LRS",
-					"tier": "Standard"
-				},
-				"properties": {
-					"changeFeed": {
-						"enabled": false
-					},
-					"restorePolicy": {
-						"enabled": false
-					},
-					"containerDeleteRetentionPolicy": {
-						"enabled": true,
-						"days": 7
-					},
-					"cors": {
-						"corsRules": []
-					},
-					"deleteRetentionPolicy": {
-						"allowPermanentDelete": false,
-						"enabled": true,
-						"days": 7
-					},
-					"isVersioningEnabled": false
-				}
-			},
-			{
-				"type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-				"apiVersion": "2022-05-01",
-				"name": "[concat(parameters('automationAccountName'), '/default/$web')]",
-				"dependsOn": [
-					"[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('automationAccountName'), 'default')]",
-					"[resourceId('Microsoft.Storage/storageAccounts', parameters('automationAccountName'))]"
-				],
-				"properties": {
-					"immutableStorageWithVersioning": {
-						"enabled": false
-					},
-					"defaultEncryptionScope": "$account-encryption-key",
-					"denyEncryptionScopeOverride": false,
-					"publicAccess": "None"
+			}
+		},
+		{
+			"apiVersion": "2020-01-13-preview",
+			"type": "Microsoft.Automation/automationAccounts/variables",
+			"name": "[concat(parameters('automationAccountName'), '/','scuba_aadrunbook'), '/test')]",
+			"dependsOn": [
+				"[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
+			],
+			"properties": {
+				"isEncrypted": false,
+				"value": "\"test\""
+			}
+		},
+		{
+			"apiVersion": "2020-01-13-preview",
+			"type": "Microsoft.Automation/automationAccounts/modules",
+			"name": "[concat(parameters('automationAccountName'), '/', variables('azureRmProfile').name)]",
+			"location": "[parameters('automationRegion')]",
+			"dependsOn": [
+				"[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
+			],
+			"properties": {
+				"contentLink": {
+					"uri": "[variables('azureRmProfile').url]"
 				}
 			}
-		],
-		"outputs": {
-			"MyOutputs": {
-				"type": "string",
-				"value": "[parameters('automationAccountName')]"
+		},
+		{
+			"apiVersion": "2020-01-13-preview",
+			"type": "Microsoft.Automation/automationAccounts/modules",
+			"name": "[concat(parameters('automationAccountName'), '/', variables('asrScripts').modules[copyIndex()].Name)]",
+			"location": "[parameters('automationRegion')]",
+			"dependsOn": [
+				"[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]",
+				"[resourceId('Microsoft.Automation/automationAccounts/modules/', parameters('automationAccountName'), variables('azureRmProfile').name)]"
+			],
+			"copy": {
+				"name": "modulesLoop",
+				"count": "[length(variables('asrScripts').modules)]"
+			},
+			"properties": {
+				"contentLink": {
+					"uri": "[variables('asrScripts').modules[copyIndex()].url]"
+				}
+			}
+		},
+		{
+			"type": "Microsoft.Storage/storageAccounts",
+			"apiVersion": "2022-05-01",
+			"name": "[parameters('automationAccountName')]",
+			"location": "[parameters('automationRegion')]",
+			"sku": {
+				"name": "Standard_LRS",
+				"tier": "Standard"
+			},
+			"kind": "StorageV2",
+			"properties": {
+				"dnsEndpointType": "Standard",
+				"defaultToOAuthAuthentication": false,
+				"publicNetworkAccess": "Enabled",
+				"allowCrossTenantReplication": true,
+				"minimumTlsVersion": "TLS1_2",
+				"allowBlobPublicAccess": true,
+				"allowSharedKeyAccess": true,
+				"networkAcls": {
+					"resourceAccessRules": [],
+					"bypass": "AzureServices",
+					"virtualNetworkRules": [],
+					"ipRules": [],
+					"defaultAction": "Allow"
+				},
+				"supportsHttpsTrafficOnly": true,
+				"encryption": {
+					"requireInfrastructureEncryption": false,
+					"services": {
+						"file": {
+							"keyType": "Account",
+							"enabled": true
+						},
+						"blob": {
+							"keyType": "Account",
+							"enabled": true
+						}
+					},
+					"keySource": "Microsoft.Storage"
+				},
+				"accessTier": "Hot"
+			}
+		},
+		{
+			"type": "Microsoft.Storage/storageAccounts/blobServices",
+			"apiVersion": "2022-05-01",
+			"name": "[concat(parameters('automationAccountName'), '/default')]",
+			"dependsOn": [
+				"[resourceId('Microsoft.Storage/storageAccounts', parameters('automationAccountName'))]"
+			],
+			"sku": {
+				"name": "Standard_LRS",
+				"tier": "Standard"
+			},
+			"properties": {
+				"changeFeed": {
+					"enabled": false
+				},
+				"restorePolicy": {
+					"enabled": false
+				},
+				"containerDeleteRetentionPolicy": {
+					"enabled": true,
+					"days": 7
+				},
+				"cors": {
+					"corsRules": []
+				},
+				"deleteRetentionPolicy": {
+					"allowPermanentDelete": false,
+					"enabled": true,
+					"days": 7
+				},
+				"isVersioningEnabled": false
+			}
+		},
+		{
+			"type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+			"apiVersion": "2022-05-01",
+			"name": "[concat(parameters('automationAccountName'), '/default/$web')]",
+			"dependsOn": [
+				"[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('automationAccountName'), 'default')]",
+				"[resourceId('Microsoft.Storage/storageAccounts', parameters('automationAccountName'))]"
+			],
+			"properties": {
+				"immutableStorageWithVersioning": {
+					"enabled": false
+				},
+				"defaultEncryptionScope": "$account-encryption-key",
+				"denyEncryptionScopeOverride": false,
+				"publicAccess": "None"
 			}
 		}
+	],
+	"outputs": {
+		"MyOutputs": {
+			"type": "string",
+			"value": "[parameters('automationAccountName')]"
+		}
 	}
+}
