@@ -211,7 +211,6 @@
                 "value": "\"test\""
             }
            },
-        },
         {
             "apiVersion": "2020-01-13-preview",
             "type": "Microsoft.Automation/automationAccounts/modules",
