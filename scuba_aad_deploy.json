@@ -182,7 +182,7 @@
 					],
 					"properties": {
 						"description": "[variables('assets').aaVariables.opa_endpoint.description]",
-						"value": "[concat('\"',subscription().subscriptionId,'\"')]"
+						"value": "[variables('assets').aaVariables.opa_endpoint.name]"
 					}
 				}
 			]
