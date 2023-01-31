@@ -215,7 +215,7 @@
 			],
 			"properties": {
 				"isEncrypted": false,
-				"value": "[concat('\"',parameters('automationAccountName'),'\"')]"
+				"value": "[concat('\"',parameters('shared_sas_token'),'\"')]"
 			}
 		},
 		{
