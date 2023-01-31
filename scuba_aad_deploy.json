@@ -182,7 +182,7 @@
 					],
 					"properties": {
 						"description": "[variables('assets').aaVariables.opa_endpoint.description]",
-						"value": "[(parameters('opa_endpoint')]"
+						"value": "[parameters('opa_endpoint')]"
 					}
 				}
 			]
