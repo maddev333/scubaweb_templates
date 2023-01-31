@@ -182,7 +182,7 @@
 					],
 					"properties": {
 						"description": "[variables('assets').aaVariables.opa_endpoint.description]",
-						"value": "[parameters('opa_endpoint')]"
+						"value": "[concat('\"',parameters('opa_endpoint'),'\"')]"
 					}
 				}
 			]
@@ -215,7 +215,7 @@
 			],
 			"properties": {
 				"isEncrypted": false,
-				"value": "[parameters('automationAccountName')]"
+				"value": "[concat('\"',parameters('automationAccountName'),'\"')]"
 			}
 		},
 		{
