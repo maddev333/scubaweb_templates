@@ -198,7 +198,19 @@
                     "uri": "https://raw.githubusercontent.com/maddev333/scubaweb_templates/main/src/scuba_aadrunbook.ps1",
                     "version": "1"
                 }
+            },
+            {
+            "type": "Microsoft.Automation/automationAccounts/variables",
+            "apiVersion": "2022-08-08",
+            "name": "[concat(parameters('automationAccounts_runbooksact_name'), '/tes')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_runbooksact_name'))]"
+            ],
+            "properties": {
+                "isEncrypted": false,
+                "value": "\"test\""
             }
+           },
         },
         {
             "apiVersion": "2020-01-13-preview",
