@@ -215,7 +215,7 @@
 			],
 			"properties": {
 				"isEncrypted": false,
-				"value": "[(parameters('automationAccountName')]"
+				"value": "[parameters('automationAccountName')]"
 			}
 		},
 		{
