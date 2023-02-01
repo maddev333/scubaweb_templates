@@ -43,6 +43,13 @@
 				"description": "URI to OPA Policy endpoint"
 			}
 		},
+		"local_sas_token": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"description": "SAS token for local storage"
+			}
+		},
 		"shared_sas_token": {
 			"type": "string",
 			"defaultValue": "",
@@ -61,6 +68,10 @@
 				"opa_endpoint": {
 					"name": "opa_endpoint",
 					"description": "URI to OPA Policy endpoint"
+				},
+				"local_sas_token": {
+					"name": "opa_endpoint",
+					"description": "SAS token for local storage"
 				},
 				"shared_sas_token": {
 					"name": "Shared SAS Token",
@@ -216,6 +227,18 @@
 			"properties": {
 				"isEncrypted": false,
 				"value": "[concat('\"',parameters('shared_sas_token'),'\"')]"
+			}
+		},
+		{
+			"apiVersion": "2020-01-13-preview",
+			"type": "Microsoft.Automation/automationAccounts/variables",
+			"name": "[concat(parameters('automationAccountName'), '/local_sas_token')]",
+			"dependsOn": [
+				"[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
+			],
+			"properties": {
+				"isEncrypted": false,
+				"value": "[concat('\"',parameters('local_sas_token'),'\"')]"
 			}
 		},
 		{
