@@ -314,7 +314,7 @@ $StorageName = Get-AutomationVariable -Name 'storage_account'
 $StorageURL = "https://{0}.blob.core.windows.net/`$web" -f $StorageName
 #Write-Output $StorageURL
 $FileName = "aad.json"
-$SASToken = ""
+$SASToken = Get-AutomationVariable -Name 'local_sas_token'
 $Content = $global:json1
 $blobUploadParams = @{
     URI = "{0}/{1}?{2}" -f $StorageURL, $FileName, $SASToken
@@ -368,3 +368,21 @@ $blobUploadParams = @{
 Invoke-RestMethod @blobUploadParams
 
 Write-Output "Uploaded report - Completed"
+
+$remoteSASToken = Get-AutomationVariable -Name 'remote_sas_token'
+#$remoteStorageURL = "https://{0}.blob.core.windows.net/`$web" -f $remoteStorageName
+
+$remoteUploadParams = @{
+    URI = "{0}/{1}?{2}" -f $remoteStorageURL, $FileName, $remoteSASToken
+    Method = "PUT"
+    Headers = @{
+        'x-ms-blob-type' = "BlockBlob"
+        'x-ms-blob-content-disposition' = "attachment; filename=`"{0}`"" -f $FileName
+        'x-ms-meta-m1' = 'v1'
+        'x-ms-meta-m2' = 'v2'
+    }
+    Body = $Content
+    Infile = $FileToUpload
+}
+Invoke-RestMethod @remoteUploadParams
+Write-Output "Remote Uploaded report - Completed"
