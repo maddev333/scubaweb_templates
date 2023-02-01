@@ -209,13 +209,25 @@
 		{
 			"apiVersion": "2020-01-13-preview",
 			"type": "Microsoft.Automation/automationAccounts/variables",
-			"name": "[concat(parameters('automationAccountName'), '/test')]",
+			"name": "[concat(parameters('automationAccountName'), '/shared_sas_token')]",
 			"dependsOn": [
 				"[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
 			],
 			"properties": {
 				"isEncrypted": false,
 				"value": "[concat('\"',parameters('shared_sas_token'),'\"')]"
+			}
+		},
+		{
+			"apiVersion": "2020-01-13-preview",
+			"type": "Microsoft.Automation/automationAccounts/variables",
+			"name": "[concat(parameters('automationAccountName'), '/storage_account')]",
+			"dependsOn": [
+				"[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
+			],
+			"properties": {
+				"isEncrypted": false,
+				"value": "[concat('\"',parameters('automationAccountName'),'\"')]"
 			}
 		},
 		{
