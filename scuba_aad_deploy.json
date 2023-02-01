@@ -43,13 +43,6 @@
 				"description": "URI to OPA Policy endpoint"
 			}
 		},
-		"local_sas_token": {
-			"type": "string",
-			"defaultValue": "",
-			"metadata": {
-				"description": "SAS token for local storage"
-			}
-		},
 		"shared_sas_token": {
 			"type": "string",
 			"defaultValue": "",
