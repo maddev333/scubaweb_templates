@@ -310,7 +310,8 @@ catch {
 
 Export-AADProvider
 
-$StorageURL = "https://scubarunbook.blob.core.windows.net/`$web"
+$StorageName = Get-AutomationVariable -Name 'storage_account'
+$StorageURL = "https://{0}.blob.core.windows.net/`$web" -f $StorageName
 #Write-Output $StorageURL
 $FileName = "aad.json"
 $SASToken = ""
