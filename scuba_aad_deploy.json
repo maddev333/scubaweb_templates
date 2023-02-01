@@ -231,7 +231,7 @@
 			],
 			"properties": {
 				"isEncrypted": false,
-				"value": "[concat('\"',parameters('local_sas_token'),'\"')]"
+				"value": "[concat('\"',update me,'\"')]"
 			}
 		},
 		{
