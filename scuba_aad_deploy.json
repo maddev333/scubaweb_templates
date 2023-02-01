@@ -231,7 +231,7 @@
 			],
 			"properties": {
 				"isEncrypted": false,
-				"value": "[concat('\"',update me,'\"')]"
+				"value": "[concat('\"','update me','\"')]"
 			}
 		},
 		{
