@@ -349,8 +349,9 @@ $response = $response | ConvertTo-Json
 
 Write-Output "Checking against policy"
 
-$date = Get-Date -Format u
-$FileName = "test" + $date +".json"
+$subId = Get-AutomationVariable -Name 'AzureSubscriptionId'
+$date = Get-Date -Format "MMddyyyy" 
+$FileName = $subId + $date +".json"
 $Content = $response
 $blobUploadParams = @{
     URI = "{0}/{1}?{2}" -f $StorageURL, $FileName, $SASToken
