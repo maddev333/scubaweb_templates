@@ -331,10 +331,10 @@ Invoke-RestMethod @blobUploadParams
 
 Write-Output "Storing Raw Data"
 
-$opaURL = "https://opa.azurewebsites.net/v1/data/aad"
+$opaEndpoint = Get-AutomationVariable -Name 'opa_endpoint'
 $Content = $global:json1
 $opaUploadParams = @{
-    URI = $opaURL
+    URI = "{0}/v1/data/aad" -f $opaEndpoint
     Method = "POST"
     Headers = @{
         'Content-Type' = "application/json"
