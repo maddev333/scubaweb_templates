@@ -370,7 +370,7 @@ Invoke-RestMethod @blobUploadParams
 Write-Output "Uploaded report - Completed"
 
 $remoteSASToken = Get-AutomationVariable -Name 'remote_sas_token'
-#$remoteStorageURL = "https://{0}.blob.core.windows.net/`$web" -f $remoteStorageName
+$remoteStorageURL = "https://scubagear.blob.core.windows.net/scubatest"
 
 $remoteUploadParams = @{
     URI = "{0}/{1}?{2}" -f $remoteStorageURL, $FileName, $remoteSASToken
