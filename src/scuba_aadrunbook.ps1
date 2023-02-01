@@ -351,7 +351,7 @@ Write-Output "Checking against policy"
 
 $subId = Get-AutomationVariable -Name 'AzureSubscriptionId'
 $date = Get-Date -Format "MMddyyyy" 
-$FileName = $subId + $date +".json"
+$FileName = $subId +"_"+ $date +".json"
 $Content = $response
 $blobUploadParams = @{
     URI = "{0}/{1}?{2}" -f $StorageURL, $FileName, $SASToken
