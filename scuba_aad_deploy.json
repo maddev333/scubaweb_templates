@@ -151,6 +151,10 @@
 		"azureRmProfile": {
 			"name": "AzureRm.Profile",
 			"url": "[uri(parameters('modulesUri'),'azurerm.profile.2.7.0.nupkg')]"
+		},
+		"graphAuth": {
+			"name": "Microsoft.Graph.Authentication",
+			"url": "[uri(parameters('modulesUri'),'microsoft.graph.authentication.2.10.0.nupkg')]"
 		}
 	},
 	"resources": [{
@@ -254,6 +258,20 @@
 		{
 			"apiVersion": "2020-01-13-preview",
 			"type": "Microsoft.Automation/automationAccounts/modules",
+			"name": "[concat(parameters('automationAccountName'), '/', variables('graphAuth').name)]",
+			"location": "[parameters('automationRegion')]",
+			"dependsOn": [
+				"[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
+			],
+			"properties": {
+				"contentLink": {
+					"uri": "[variables('graphAuth').url]"
+				}
+			}
+		},
+		{
+			"apiVersion": "2020-01-13-preview",
+			"type": "Microsoft.Automation/automationAccounts/modules",
 			"name": "[concat(parameters('automationAccountName'), '/', variables('azureRmProfile').name)]",
 			"location": "[parameters('automationRegion')]",
 			"dependsOn": [
@@ -272,7 +290,8 @@
 			"location": "[parameters('automationRegion')]",
 			"dependsOn": [
 				"[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]",
-				"[resourceId('Microsoft.Automation/automationAccounts/modules/', parameters('automationAccountName'), variables('azureRmProfile').name)]"
+				"[resourceId('Microsoft.Automation/automationAccounts/modules/', parameters('automationAccountName'), variables('azureRmProfile').name)]",
+				"[resourceId('Microsoft.Automation/automationAccounts/modules/', parameters('automationAccountName'), variables('graphAuth').name)]"
 			],
 			"copy": {
 				"name": "modulesLoop",
