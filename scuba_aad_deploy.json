@@ -123,22 +123,22 @@
 				{
 					"name": "Microsoft.Graph.Groups",
 					"url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.groups.2.10.0.nupkg",
-					"dependsOn": ["Microsoft.Graph.Authentication"]
+					"dependsOn": ["Microsoft.Graph.Users"]
 				},
 				{
 					"name": "Microsoft.Graph.Identity.DirectoryManagement",
 					"url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.identity.directorymanagement.2.10.0.nupkg",
-					"dependsOn": ["Microsoft.Graph.Authentication"]
+					"dependsOn": ["Microsoft.Graph.Users"]
 				},
 				{
 					"name": "Microsoft.Graph.DeviceManagement.Enrolment",
 					"url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.devicemanagement.enrolment.2.10.0.nupkg",
-					"dependsOn": ["Microsoft.Graph.Authentication"]
+					"dependsOn": ["Microsoft.Graph.Users"]
 				},
 				{
 					"name": "Microsoft.Graph.Identity.SignIns",
 					"url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.identity.signins.2.10.0.nupkg",
-					"dependsOn": ["Microsoft.Graph.Authentication"]
+					"dependsOn": ["Microsoft.Graph.Users"]
 				},
 				{
 					"name": "Microsoft.Graph.Users",
