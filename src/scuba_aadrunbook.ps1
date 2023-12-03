@@ -296,18 +296,6 @@ catch {
     throw $_.Exception
 }
 
-try
-{
-    $Connection = Get-AutomationConnection -Name AzureRunAsConnection
-    #Write-Output ($Connection)
-    Connect-MgGraph -ClientID $Connection.ApplicationId -TenantId $Connection.TenantId -CertificateThumbprint $Connection.CertificateThumbprint
-    
-}
-catch {
-    Write-Error -Message $_.Exception
-    throw $_.Exception
-}
-
 Export-AADProvider
 
 $StorageName = Get-AutomationVariable -Name 'storage_account'
