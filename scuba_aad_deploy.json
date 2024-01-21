@@ -155,7 +155,7 @@
 		},
 		"graphAuth": {
 			"name": "Microsoft.Graph.Authentication",
-			"url": "[uri(parameters('modulesUri'),'microsoft.graph.authentication.2.10.0.nupkg')]"
+			"url": "[uri(parameters('modulesUri'),'microsoft.graph.authentication.2.12.0.nupkg')]"
 		}
 	},
 	"resources": [{
