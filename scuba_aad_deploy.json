@@ -140,6 +140,11 @@
 					"name": "Microsoft.Graph.Users",
 					"url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.users.2.12.0.nupkg",
 					"dependsOn": ["Microsoft.Graph.Authentication"]
+				},
+				{
+					"name": "Microsoft.Graph.Identity.Governance",
+					"url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.identity.governance.2.12.0.nupkg",
+					"dependsOn": ["Microsoft.Graph.Authentication"]
 				}
 
 			]
