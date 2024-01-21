@@ -118,7 +118,7 @@
 				},
 				{
 					"name": "Microsoft.Graph.Groups",
-					"url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.groups.2.10.0.nupkg",
+					"url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.groups.2.12.0.nupkg",
 					"dependsOn": ["Microsoft.Graph.Users"]
 				},
 				{
@@ -128,7 +128,7 @@
 				},
 				{
 					"name": "Microsoft.Graph.DeviceManagement.Enrollment",
-					"url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.devicemanagement.enrollment.2.10.0.nupkg",
+					"url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.devicemanagement.enrollment.2.12.0.nupkg",
 					"dependsOn": ["Microsoft.Graph.Users"]
 				},
 				{
