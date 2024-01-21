@@ -290,6 +290,8 @@ try
     Connect-AzAccount -Identity
     $token = Get-AzAccessToken -ResourceUrl "https://graph.microsoft.com"
     #Write-Output ($token)
+    Connect-MgGraph -Identity
+
 }
 catch {
     Write-Error -Message $_.Exception
@@ -302,16 +304,17 @@ $StorageName = Get-AutomationVariable -Name 'storage_account'
 $StorageURL = "https://{0}.blob.core.windows.net/`$web" -f $StorageName
 #Write-Output $StorageURL
 $FileName = "aad.json"
-$SASToken = Get-AutomationVariable -Name 'local_sas_token'
+#$SASToken = Get-AutomationVariable -Name 'local_sas_token'
 $Content = $global:json1
 $blobUploadParams = @{
-    URI = "{0}/{1}?{2}" -f $StorageURL, $FileName, $SASToken
+    URI = "{0}/{1}" -f $StorageURL, $FileName
     Method = "PUT"
     Headers = @{
         'x-ms-blob-type' = "BlockBlob"
         'x-ms-blob-content-disposition' = "attachment; filename=`"{0}`"" -f $FileName
         'x-ms-meta-m1' = 'v1'
         'x-ms-meta-m2' = 'v2'
+        'Authorization'="Bearer {0}" -f $token
     }
     Body = $Content
     Infile = $FileToUpload

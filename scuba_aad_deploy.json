@@ -123,7 +123,7 @@
 				},
 				{
 					"name": "Microsoft.Graph.Identity.DirectoryManagement",
-					"url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.identity.directorymanagement.2.10.0.nupkg",
+					"url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.identity.directorymanagement.2.12.0.nupkg",
 					"dependsOn": ["Microsoft.Graph.Users"]
 				},
 				{
@@ -133,12 +133,12 @@
 				},
 				{
 					"name": "Microsoft.Graph.Identity.SignIns",
-					"url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.identity.signins.2.10.0.nupkg",
+					"url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.identity.signins.2.12.0.nupkg",
 					"dependsOn": ["Microsoft.Graph.Users"]
 				},
 				{
 					"name": "Microsoft.Graph.Users",
-					"url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.users.2.10.0.nupkg",
+					"url": "https://psg-prod-eastus.azureedge.net/packages/microsoft.graph.users.2.12.0.nupkg",
 					"dependsOn": ["Microsoft.Graph.Authentication"]
 				}
 
