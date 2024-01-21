@@ -299,29 +299,46 @@ catch {
 }
 
 Export-AADProvider
-
 $StorageName = Get-AutomationVariable -Name 'storage_account'
-$StorageURL = "https://{0}.blob.core.windows.net/`$web" -f $StorageName
-#Write-Output $StorageURL
-$FileName = "aad.json"
-#$SASToken = Get-AutomationVariable -Name 'local_sas_token'
-$Content = $global:json1
-$blobUploadParams = @{
-    URI = "{0}/{1}" -f $StorageURL, $FileName
-    Method = "PUT"
-    Headers = @{
-        'x-ms-blob-type' = "BlockBlob"
-        'x-ms-blob-content-disposition' = "attachment; filename=`"{0}`"" -f $FileName
-        'x-ms-meta-m1' = 'v1'
-        'x-ms-meta-m2' = 'v2'
-        'Authorization'="Bearer {0}" -f $token
-    }
-    Body = $Content
-    Infile = $FileToUpload
-}
-Invoke-RestMethod @blobUploadParams
+$ctx = New-AzStorageContext -StorageAccountName $StorageName -UseConnectedAccount
+#$containers =  Get-AzStorageContainer -IncludeDeleted -Context $ctx
+$ContainerName = 'scuba'
+New-AzStorageContainer -Name $ContainerName -Context $ctx
+$container =Get-AzStorageContainer -Name $ContainerName -Context $ctx
 
-Write-Output "Storing Raw Data"
+$content = [system.Text.Encoding]::UTF8.GetBytes($global:json1)
+#$content = [system.Text.Encoding]::UTF8.GetBytes("test")
+
+$container.CloudBlobContainer.GetBlockBlobReference("aad.json").UploadFromByteArray($content,0,$content.Length)
+Write-Output "{0}" -f $container
+Write-Output "List containers"
+#"this is a test" | out-file -filepath aad.json
+
+#Set-AzStorageBlobContent -File aad.json -Container $ContainerName -Blob testblob -Context $ctx
+
+
+#$StorageName = Get-AutomationVariable -Name 'storage_account'
+#$StorageURL = "https://{0}.blob.core.windows.net/`$web" -f $StorageName
+#Write-Output $StorageURL
+#$FileName = "aad.json"
+#$SASToken = Get-AutomationVariable -Name 'local_sas_token'
+#$Content = $global:json1
+#$blobUploadParams = @{
+#    URI = "{0}/{1}" -f $StorageURL, $FileName
+#    Method = "PUT"
+#    Headers = @{
+#        'x-ms-blob-type' = "BlockBlob"
+#        'x-ms-blob-content-disposition' = "attachment; filename=`"{0}`"" -f $FileName
+#        'x-ms-meta-m1' = 'v1'
+#        'x-ms-meta-m2' = 'v2'
+#        'Authorization'= "Bearer {0}" -f $token.Token
+#    }
+#    Body = $Content
+#    Infile = $FileToUpload
+#}
+#$Post = Invoke-RestMethod @blobUploadParams 
+#Write-Output "{0}" -f $blobUploadParams.Headers
+#Write-Output "Storing Raw Data"
 
 $opaEndpoint = Get-AutomationVariable -Name 'opa_endpoint'
 $Content = $global:json1
