@@ -360,20 +360,25 @@ Write-Output "Checking against policy"
 $subId = Get-AutomationVariable -Name 'AzureSubscriptionId'
 $date = Get-Date -Format "MMddyyyy" 
 $FileName = $subId +"_"+ $date +".json"
-$Content = $response
-$blobUploadParams = @{
-    URI = "{0}/{1}?{2}" -f $StorageURL, $FileName, $SASToken
-    Method = "PUT"
-    Headers = @{
-        'x-ms-blob-type' = "BlockBlob"
-        'x-ms-blob-content-disposition' = "attachment; filename=`"{0}`"" -f $FileName
-        'x-ms-meta-m1' = 'v1'
-        'x-ms-meta-m2' = 'v2'
-    }
-    Body = $Content
-    Infile = $FileToUpload
-}
-Invoke-RestMethod @blobUploadParams
+#$Content = $response
+#$blobUploadParams = @{
+#    URI = "{0}/{1}?{2}" -f $StorageURL, $FileName, $SASToken
+#    Method = "PUT"
+#    Headers = @{
+#        'x-ms-blob-type' = "BlockBlob"
+#        'x-ms-blob-content-disposition' = "attachment; filename=`"{0}`"" -f $FileName
+#        'x-ms-meta-m1' = 'v1'
+#        'x-ms-meta-m2' = 'v2'
+#    }
+#    Body = $Content
+#    Infile = $FileToUpload
+#}
+#Invoke-RestMethod @blobUploadParams
+
+$content = [system.Text.Encoding]::UTF8.GetBytes($response)
+#$content = [system.Text.Encoding]::UTF8.GetBytes("test")
+
+$container.CloudBlobContainer.GetBlockBlobReference("report.json").UploadFromByteArray($content,0,$content.Length)
 
 Write-Output "Uploaded report - Completed"
 
