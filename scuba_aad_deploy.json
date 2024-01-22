@@ -38,7 +38,7 @@
 		},
 		"opa_endpoint": {
 			"type": "string",
-			"defaultValue": "https://opa.azurewebsites.net/",
+			"defaultValue": "https://opaendpoint.azurewebsites.net",
 			"metadata": {
 				"description": "URI to OPA Policy endpoint"
 			}
