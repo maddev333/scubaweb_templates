@@ -303,7 +303,12 @@ $StorageName = Get-AutomationVariable -Name 'storage_account'
 $ctx = New-AzStorageContext -StorageAccountName $StorageName -UseConnectedAccount
 #$containers =  Get-AzStorageContainer -IncludeDeleted -Context $ctx
 $ContainerName = 'scuba'
+try{
 New-AzStorageContainer -Name $ContainerName -Context $ctx
+}
+catch{
+Write-Output "Scuba Conatainer already exists"
+}
 $container =Get-AzStorageContainer -Name $ContainerName -Context $ctx
 
 $content = [system.Text.Encoding]::UTF8.GetBytes($global:json1)
