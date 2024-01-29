@@ -388,10 +388,10 @@ $container.CloudBlobContainer.GetBlockBlobReference("report.json").UploadFromByt
 Write-Output "Uploaded report - Completed"
 
 $remoteSASToken = Get-AutomationVariable -Name 'remote_sas_token'
-$remoteStorageURL = "https://scubagear.blob.core.windows.net/scubatest/"
+$remoteStorageURL = "https://scubagear.blob.core.windows.net/scubatest"
 
 $remoteUploadParams = @{
-    URI = "{0}/{1}?{2}" -f $remoteStorageURL, $FileName, $remoteSASToken
+    URI = "{0}/{1}/?{2}" -f $remoteStorageURL, $FileName, $remoteSASToken
     Method = "PUT"
     Headers = @{
         'x-ms-blob-type' = "BlockBlob"
