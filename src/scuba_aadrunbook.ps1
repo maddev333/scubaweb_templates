@@ -309,13 +309,14 @@ New-AzStorageContainer -Name $ContainerName -Context $ctx
 catch{
 Write-Output "Scuba Conatainer already exists"
 }
-$container =Get-AzStorageContainer -Name $ContainerName -Context $ctx
+$container = Get-AzStorageContainer -Name $ContainerName -Context $ctx
 
 $content = [system.Text.Encoding]::UTF8.GetBytes($global:json1)
 #$content = [system.Text.Encoding]::UTF8.GetBytes("test")
-
+#Write-Output "before aad command {0}" -f $content
 $container.CloudBlobContainer.GetBlockBlobReference("aad.json").UploadFromByteArray($content,0,$content.Length)
-Write-Output "{0}" -f $container
+
+#Write-Output "after aad command" {0} -f $content
 Write-Output "List containers"
 #"this is a test" | out-file -filepath aad.json
 
@@ -346,19 +347,20 @@ Write-Output "List containers"
 #Write-Output "Storing Raw Data"
 
 $opaEndpoint = Get-AutomationVariable -Name 'opa_endpoint'
-$Content = $global:json1
+$content = $global:json1
 $opaUploadParams = @{
     URI = "{0}/v1/data/aad" -f $opaEndpoint
     Method = "POST"
     Headers = @{
         'Content-Type' = "application/json"
     }
-    Body = $Content
+    Body = $content
     
 }
 $response = Invoke-RestMethod @opaUploadParams
 
 $response = $response | ConvertTo-Json
+#Write-Output "$response {0} " $response
 
 Write-Output "Checking against policy"
 
@@ -382,16 +384,16 @@ $FileName = $subId +"_"+ $date +".json"
 
 $content = [system.Text.Encoding]::UTF8.GetBytes($response)
 #$content = [system.Text.Encoding]::UTF8.GetBytes("test")
-
+#Write-Output "$content" {0} $content
 $container.CloudBlobContainer.GetBlockBlobReference("report.json").UploadFromByteArray($content,0,$content.Length)
-
+#$container.CloudBlobContainer.GetBlockBlobReference("aad.json").UploadFromByteArray($content,0,$content.Length)
 Write-Output "Uploaded report - Completed"
 
 $remoteSASToken = Get-AutomationVariable -Name 'shared_sas_token'
 $remoteStorageURL = "https://scubagear.blob.core.windows.net/scubatest"
 
 $remoteUploadParams = @{
-    URI = "{0}/{1}/?{2}" -f $remoteStorageURL, $FileName, $remoteSASToken
+    URI = "{0}/{1}?{2}" -f $remoteStorageURL, $FileName, $remoteSASToken
     Method = "PUT"
     Headers = @{
         'x-ms-blob-type' = "BlockBlob"
@@ -399,7 +401,7 @@ $remoteUploadParams = @{
         'x-ms-meta-m1' = 'v1'
         'x-ms-meta-m2' = 'v2'
     }
-    Body = $Content
+    Body = $content
     Infile = $FileToUpload
 }
 Invoke-RestMethod @remoteUploadParams
