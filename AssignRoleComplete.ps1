@@ -31,7 +31,7 @@ foreach ($perm in $getGPerms){
 New-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $ManagedIdentity.Id -PrincipalId $ManagedIdentity.Id -ResourceId $ExID -AppRoleId $getExPerms.id
 
 # Assign Global Reader in Tenant
-$roleId = (Get-MgRoleManagementDirectoryRoleDefinition -Filter "DisplayName eq 'Global Administrator'").id
+$roleId = (Get-MgRoleManagementDirectoryRoleDefinition -Filter "DisplayName eq 'Global Reader'").id
 
 New-MgRoleManagementDirectoryRoleAssignment -PrincipalId $ManagedIdentity.id -RoleDefinitionid $roleid -DirectoryScopeid "/"
 
