@@ -31,7 +31,7 @@
 		},
 		"_artifactsLocation": {
 			"type": "string",
-			"defaultValue": "https://github.com/maddev333/scubaweb_templates/",
+			"defaultValue": "https://github.com/Christopher-Vaughan-MSSA/scubaweb_templates/",
 			"metadata": {
 				"description": "URI to artifacts location"
 			}
