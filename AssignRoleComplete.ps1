@@ -12,7 +12,7 @@ Connect-MgGraph -Scopes Application.Read.All, AppRoleAssignment.ReadWrite.All, R
 
 ### Store Managed Identity Name and Permissions
 $ManagedIdentityName = (Get-AZAutomationAccount | Select-Object -ExpandProperty AutomationAccountName)
-$Gpermissions = "Directory.Read.All", "GroupMember.Read.All", "Organization.Read.All", "Policy.Read.All", "RoleManagement.Read.Directory", "User.Read.All", "Sites.FullControl.All", "Directory.Read.All"
+$Gpermissions = "Directory.Read.All", "GroupMember.Read.All", "Organization.Read.All", "Policy.Read.All", "RoleManagement.Read.Directory", "User.Read.All", "Sites.FullControl.All", "PrivilegedEligibilitySchedule.Read.AzureADGroup"
 $EXpermission = "Exchange.ManageAsApp"
 
 # Get service principal and roles
