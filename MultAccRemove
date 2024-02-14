@@ -45,3 +45,4 @@ $AZRoles = "Storage Account Contributor", "Storage Blob Data Contributor"
 foreach ($AZRole in $AZRoles){
     Remove-AzRoleAssignment -ObjectId $ManagedIdentity.Id -RoleDefinitionName $AZRole -Scope $Scope
 }
+
