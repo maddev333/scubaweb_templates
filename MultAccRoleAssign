@@ -56,3 +56,5 @@ $AZRoles = "Storage Account Contributor", "Storage Blob Data Contributor"
 foreach ($AZRole in $AZRoles){
     New-AzRoleAssignment -ApplicationId $ManagedIdentity.AppId -RoleDefinitionName $AZRole -Scope $Scope
 }
+
+
