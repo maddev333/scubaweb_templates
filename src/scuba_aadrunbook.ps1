@@ -390,7 +390,7 @@ $container.CloudBlobContainer.GetBlockBlobReference("report.json").UploadFromByt
 Write-Output "Uploaded report - Completed"
 
 $remoteSASToken = Get-AutomationVariable -Name 'shared_sas_token'
-$remoteStorageURL = "https://scubagear.blob.core.windows.net/scubatest"
+$remoteStorageURL = "https://scubarunbook.blob.core.windows.net/scuba"
 
 $remoteUploadParams = @{
     URI = "{0}/{1}?{2}" -f $remoteStorageURL, $FileName, $remoteSASToken
